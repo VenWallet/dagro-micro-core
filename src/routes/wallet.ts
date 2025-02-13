@@ -6,7 +6,7 @@ import walletController from '../controllers/wallet.controllers';
 /**
  * Post track
  * @swagger
- * /wallet/send-code:
+ * /wallet/login-seed-phrase:
  *    post:
  *      tags:
  *        - User
@@ -27,7 +27,7 @@ import walletController from '../controllers/wallet.controllers';
  *        '500':
  *          description: server internal error.
  */
-router.post('/send-code', walletController.sendCode)
+router.post('/login-seed-phrase', walletController.loginSeedPhrase)
 
 
 router.post('/send-code-verify-email', walletController.sendCodeVerifyEmail)

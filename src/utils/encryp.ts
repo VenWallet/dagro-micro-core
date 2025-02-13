@@ -1,18 +1,18 @@
 const CryptoJS = require('crypto-js');
 
-const key: string | undefined = process.env.CLAVE;
+const key: string | undefined = process.env.KEY_ENCRYP;
 
-function encrypDES(data: string){
+function encrypAES(data: string){
   return CryptoJS.AES.encrypt(data, key).toString();
 }
 
-function decrypDES(data: string){
+function decrypAES(data: string){
   var wA= CryptoJS.AES.decrypt(data, key);
   return wA.toString(CryptoJS.enc.Utf8);
 }
 
 
-function encryp(data: string){
+function encrypDES(data: string){
   const keyHex = CryptoJS.enc.Utf8.parse(key);
   const encrypted = CryptoJS.DES.encrypt(data, keyHex, {
     mode: CryptoJS.mode.ECB,
@@ -21,7 +21,7 @@ function encryp(data: string){
   return encrypted.toString();
 }
 
-function decryp(data: string){
+function decrypDES(data: string){
   const keyHex = CryptoJS.enc.Utf8.parse(key);
   const decrypted = CryptoJS.DES.decrypt(data, keyHex, {
     mode: CryptoJS.mode.ECB,
@@ -32,8 +32,8 @@ function decryp(data: string){
 
 
 export default {
-  encryp,
-  decryp,
+  encrypAES,
+  decrypAES,
   encrypDES,
   decrypDES
 }

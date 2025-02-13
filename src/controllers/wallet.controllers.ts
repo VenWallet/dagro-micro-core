@@ -1,32 +1,65 @@
 import { Request, Response } from "express";
 import WalletService from "../services/wallet.service";
 import axios from "axios";
+import { Code } from "typeorm";
+import { responseInterface } from "../interfaces/response.interface";
+import ResponseUtils from "../utils/response.utils";
 
 export default class WalletController {
+  static async loginSeedPhrase(req: Request, res: Response) {
+    try {
+      const { seedPhrase } = req.body;
+
+      if (!seedPhrase)
+        throw ResponseUtils.error(400, "warning", "seedPhrase es requerido");
+
+      res.send(ResponseUtils.response(200, "ok", await WalletService.loginSeedPhrase(seedPhrase)));
+    } catch (error: any) {
+      const dataError: responseInterface = ResponseUtils.responseError(error);
+      console.log(dataError);
+
+      res.status(dataError.code).send(dataError);
+    }
+  }
 
   static async sendCode(req: Request, res: Response) {
     try {
-      console.log("ip: ", req.headers['x-forwarded-for'], req.connection.remoteAddress)
-      const {email} = req.body;
+      console.log(
+        "ip: ",
+        req.headers["x-forwarded-for"],
+        req.connection.remoteAddress
+      );
+      const { email } = req.body;
       res.send({
-        data: "deprecate" //await service.sendCode(email)
+        data: "deprecate", //await service.sendCode(email)
       });
     } catch (error: any) {
-      console.log(error)
-      let statusCode = error.message.split("-").length > 0 ? Number(error.message.split("-")[0]) ? Number(error.message.split("-")[0]) : 500 : 500;
+      console.log(error);
+      let statusCode =
+        error.message.split("-").length > 0
+          ? Number(error.message.split("-")[0])
+            ? Number(error.message.split("-")[0])
+            : 500
+          : 500;
       res.status(statusCode).send(error.message);
     }
-  };
+  }
 
   static async sendCodeVerifyEmail(req: Request, res: Response) {
     try {
-      const {email, cedula} = req.body;
-      
-      if( !["gmail.com", "dvconsultores.com", "metademocracia.social"].includes(email.toLowerCase().split("@")[1]) ) throw new Error("400 - solo se permiten correos GMAIL");
+      const { email, cedula } = req.body;
+
+      if (
+        !["gmail.com", "dvconsultores.com", "metademocracia.social"].includes(
+          email.toLowerCase().split("@")[1]
+        )
+      )
+        throw new Error("400 - solo se permiten correos GMAIL");
 
       const ip: string | undefined = req.ip || req.connection.remoteAddress;
 
-      if(!ip) throw new Error("400 - no se pudo obtener la direccion ip del cliente");
+      if (!ip)
+        throw new Error("400 - no se pudo obtener la direccion ip del cliente");
 
       /* async function isIpFromVenezuela(ip: string): Promise<boolean> {
         try {
@@ -54,32 +87,17 @@ export default class WalletController {
       })(); */
 
       res.send({
-        data: {}//await service.sendCodeVerifyEmail(email, cedula, ip)
+        data: {}, //await service.sendCodeVerifyEmail(email, cedula, ip)
       });
     } catch (error: any) {
-      console.log(error)
-      let statusCode = error.message.split("-").length > 0 ? Number(error.message.split("-")[0]) ? Number(error.message.split("-")[0]) : 500 : 500;
+      console.log(error);
+      let statusCode =
+        error.message.split("-").length > 0
+          ? Number(error.message.split("-")[0])
+            ? Number(error.message.split("-")[0])
+            : 500
+          : 500;
       res.status(statusCode).send(error.message || error);
     }
-  };
+  }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

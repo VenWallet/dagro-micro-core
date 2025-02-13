@@ -2,24 +2,23 @@ import GoogleAuthUtils from "../utils/google_auth.utils";
 import walletUtils from "../utils/wallet.utils";
 import encryp from "../utils/encryp";
 import { configNear } from "../config/nearConfig";
-import { Not, In } from "typeorm"
+import { Not, In } from "typeorm";
 // const myContractWasm  = require("../services/code/metadao_dao.wasm");
-import * as XLSX from 'xlsx';
-import { Response } from 'express';
+import * as XLSX from "xlsx";
+import { Response } from "express";
 import axios from "axios";
 import { Users } from "../entities";
-import { loginInterface, perfilInterface, walletInterface } from "../interfaces/wallet.interface";
-
-
-
-
+import {
+  loginInterface,
+  perfilInterface,
+  walletInterface,
+} from "../interfaces/wallet.interface";
+import ResponseUtils from "../utils/response.utils";
 
 //funcion de delay
 function delay(ms: number) {
-  return new Promise( resolve => setTimeout(resolve, ms) );
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
-
-
 
 /*async function encryptBD() {
   console.log("---------------------------------------------")
@@ -45,11 +44,12 @@ function delay(ms: number) {
 
 }*/
 
+export default class WalletService {
+  static async loginSeedPhrase(seedPhrase: string): Promise<loginInterface> {
+    const walletData: walletInterface = await walletUtils.parseFromSeedPhrase(
+      seedPhrase
+    );
 
-class WalletService {
-  async loginSeedPhrase(seedPhrase: string ): Promise<loginInterface> {
-    const walletData: walletInterface = await walletUtils.parseFromSeedPhrase(seedPhrase);
-    
     let user = await Users.findOne({ where: { wallet: walletData.address } });
 
     if (!user) {
@@ -63,29 +63,29 @@ class WalletService {
       email: user.email || "",
       name: user.name || "",
       image: user.image || "",
-    }
-
-    
+    };
   }
-  
-  async putPerfil(
+
+  static async putPerfil(
     seedPhrase: string,
     data: {
-      email?: string,
-      name?: string,
-      image?: string,
-      headingQuantity?: string,
-      heading?: string,
-      ladnName?: string,
-      landAddress?: string
-    } 
+      email?: string;
+      name?: string;
+      image?: string;
+      headingQuantity?: string;
+      heading?: string;
+      ladnName?: string;
+      landAddress?: string;
+    }
   ): Promise<perfilInterface> {
-    const walletData: walletInterface = await walletUtils.parseFromSeedPhrase(seedPhrase);
-    
+    const walletData: walletInterface = await walletUtils.parseFromSeedPhrase(
+      seedPhrase
+    );
+
     let user = await Users.findOne({ where: { wallet: walletData.address } });
 
-    if (!user) throw "Usuario no registrado";
-      
+    if (!user) throw ResponseUtils.error(400, "warning", "Usuario no registrado");
+
     user.email = data?.email || user.email;
     user.name = data?.name || user.name;
     user.image = data?.image || user.image;
@@ -93,7 +93,6 @@ class WalletService {
     user.heading = data?.heading || user.heading;
     user.ladnName = data?.ladnName || user.ladnName;
     user.landAddress = data?.landAddress || user.landAddress;
-
 
     user.save();
 
@@ -106,11 +105,8 @@ class WalletService {
       heading: user.heading || "",
       ladnName: user.ladnName || "",
       landAddress: user.landAddress || "",
-    }
-    
+    };
   }
-  
-
 
   /* async verifyGoogle(token: string) {
     let response: any;
@@ -155,7 +151,6 @@ class WalletService {
     }
   } */
 
-
   /*async downloadUsersAsExcel(res: Response) {
     await delay(3000);
     const wallets = await Wallet.find();
@@ -184,46 +179,38 @@ class WalletService {
     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     res.send(excelBuffer);
   }*/
-
 }
 
-
-async function releaseFounds(
-  id: number,
-) {
+async function releaseFounds(id: number) {
   let result = { data: {} };
   await axios
-  .post(
-    "http://localhost:3003/encuesta/",
-    {
+    .post("http://localhost:3003/encuesta/", {
       id: id,
-    }
-  )
-  .then((response: any) => {
-    result = response;
-  })
-  .catch((error: any) => {
-    throw new Error("Error al liberar el saldo : " + error);
-  });
+    })
+    .then((response: any) => {
+      result = response;
+    })
+    .catch((error: any) => {
+      throw new Error("Error al liberar el saldo : " + error);
+    });
 
-  return result
+  return result;
 }
-
 
 async function algo() {
   await releaseFounds(1).catch((error) => {
-    console.log("error aqui: ", error)
+    console.log("error aqui: ", error);
     throw new Error("Error aqui: " + error);
   });
 
-  console.log("fin-------------------------------------------------------------")
+  console.log(
+    "fin-------------------------------------------------------------"
+  );
 }
 
 // algo();
 
-// WalletService.prototype.verifyWalletName("andresdom.near") // ("andresdom.near") 
-
-
+// WalletService.prototype.verifyWalletName("andresdom.near") // ("andresdom.near")
 
 /* async function algo() {
  await delay(3000);
@@ -249,5 +236,3 @@ async function algo() {
 } */
 
 // algo();
-
-export default WalletService;
