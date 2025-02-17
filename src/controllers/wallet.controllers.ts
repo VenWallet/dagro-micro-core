@@ -24,18 +24,7 @@ export default class WalletController {
     }
   }
 
-
-  static async getProfile(req: AuthenticatedRequest, res: Response) {
-    try {
-      res.send(ResponseUtils.response(200, "ok", await WalletService.getProfile(req.user?.wallet || "")));
-    } catch (error: any) {
-      const dataError: responseInterface = ResponseUtils.responseError(error);
-      console.log(dataError);
-
-      res.status(dataError.code).send(dataError);
-    }
-  }
-
+  
   static async loginSeedPhrase(req: Request, res: Response) {
     try {
       const { seedPhrase } = req.body;
@@ -51,6 +40,19 @@ export default class WalletController {
       res.status(dataError.code).send(dataError);
     }
   }
+
+
+  static async getProfile(req: AuthenticatedRequest, res: Response) {
+    try {
+      res.send(ResponseUtils.response(200, "ok", await WalletService.getProfile(req.user?.wallet || "")));
+    } catch (error: any) {
+      const dataError: responseInterface = ResponseUtils.responseError(error);
+      console.log(dataError);
+
+      res.status(dataError.code).send(dataError);
+    }
+  }
+  
 
   static async sendCode(req: Request, res: Response) {
     try {
