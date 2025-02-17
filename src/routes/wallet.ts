@@ -1,7 +1,9 @@
 import express from 'express';
 const router = express.Router();
 import walletController from '../controllers/wallet.controllers';
+import authMiddleware from '../middleware/auth.middleware';
 
+router.get('/status', walletController.status)
 
 /**
  * Post track
@@ -29,8 +31,8 @@ import walletController from '../controllers/wallet.controllers';
  */
 router.post('/login-seed-phrase', walletController.loginSeedPhrase)
 
+router.get('/get-grofile', authMiddleware, walletController.getProfile)
 
-router.post('/send-code-verify-email', walletController.sendCodeVerifyEmail)
 
 
 

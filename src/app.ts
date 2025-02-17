@@ -75,6 +75,6 @@ if (process.env.NODE_ENV === "production") {
   console.log("htpp");
 }
 
-server.listen(port, () => {
+server.listen(port, '0.0.0.0', () => {
   return console.log(`server is listening on ${port} - ${process.env.PROTOCOL}${process.env.HOST}:${process.env.PORT}${process.env.RUTA}/`);
 });

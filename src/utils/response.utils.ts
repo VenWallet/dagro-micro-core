@@ -1,3 +1,4 @@
+import { ResponseCode } from "../enums/response.enum";
 import { responseInterface } from "../interfaces/response.interface";
 
 
@@ -10,16 +11,18 @@ export default class ResponseUtils {
     }
   }
 
-  static error(code: number, message: string, error: any, ): responseInterface {
+  static error(code: number | ResponseCode, message: string, error: any, ): responseInterface {
     let errorParse: string;  
     if (typeof error != 'string') {
       errorParse = JSON.stringify(error);
     } else {
       errorParse = error;
     }
+
+
       
     return {
-      code,
+      code: typeof code === "number" ? code : Number(code),
       message,
       data: errorParse! || ""
     }

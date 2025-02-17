@@ -7,13 +7,14 @@ export interface walletInterface {
 }
 
 export interface loginInterface {
+  token: string;
   wallet: string;
   email: string;
   name: string;
   image: string;
 }
 
-export interface perfilInterface {
+export interface profileInterface {
   wallet: string;
   email: string;
   name: string;

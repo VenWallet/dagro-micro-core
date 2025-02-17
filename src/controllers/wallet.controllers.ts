@@ -4,15 +4,45 @@ import axios from "axios";
 import { Code } from "typeorm";
 import { responseInterface } from "../interfaces/response.interface";
 import ResponseUtils from "../utils/response.utils";
+import { ResponseCode } from "../enums/response.enum";
+import { Users } from "../entities";
+
+interface AuthenticatedRequest extends Request {
+  user?: Users;
+}
 
 export default class WalletController {
+  
+  static async status(req: Request, res: Response) {
+    try {
+      res.send(ResponseUtils.response(200, "ok", "todo bien"));
+    } catch (error: any) {
+      const dataError: responseInterface = ResponseUtils.responseError(error);
+      console.log(dataError);
+
+      res.status(dataError.code).send(dataError);
+    }
+  }
+
+
+  static async getProfile(req: AuthenticatedRequest, res: Response) {
+    try {
+      res.send(ResponseUtils.response(200, "ok", await WalletService.getProfile(req.user?.wallet || "")));
+    } catch (error: any) {
+      const dataError: responseInterface = ResponseUtils.responseError(error);
+      console.log(dataError);
+
+      res.status(dataError.code).send(dataError);
+    }
+  }
+
   static async loginSeedPhrase(req: Request, res: Response) {
     try {
       const { seedPhrase } = req.body;
-
+      
       if (!seedPhrase)
-        throw ResponseUtils.error(400, "warning", "seedPhrase es requerido");
-
+        throw ResponseUtils.error(ResponseCode.WARNING, "warning", "seedPhrase es requerido");
+      
       res.send(ResponseUtils.response(200, "ok", await WalletService.loginSeedPhrase(seedPhrase)));
     } catch (error: any) {
       const dataError: responseInterface = ResponseUtils.responseError(error);

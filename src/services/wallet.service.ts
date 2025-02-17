@@ -10,10 +10,12 @@ import axios from "axios";
 import { Users } from "../entities";
 import {
   loginInterface,
-  perfilInterface,
+  profileInterface,
   walletInterface,
 } from "../interfaces/wallet.interface";
 import ResponseUtils from "../utils/response.utils";
+import { ResponseCode } from "../enums/response.enum";
+import jwt from 'jsonwebtoken'; //  require('jsonwebtoken');
 
 //funcion de delay
 function delay(ms: number) {
@@ -45,6 +47,21 @@ function delay(ms: number) {
 }*/
 
 export default class WalletService {
+  
+  static async generateToken(wallet: string): Promise<string> {
+    const jwtSecret = process.env.JWT_SECRET || "secret";
+
+    const token = jwt.sign(
+      { 
+        id: wallet,
+      },
+      jwtSecret!,
+      // { expiresIn: '24h' }
+    );
+
+    return token;
+  }
+
   static async loginSeedPhrase(seedPhrase: string): Promise<loginInterface> {
     const walletData: walletInterface = await walletUtils.parseFromSeedPhrase(
       seedPhrase
@@ -58,15 +75,35 @@ export default class WalletService {
       user.save();
     }
 
+    const token: string = await this.generateToken(walletData.address);
+
     return {
+      token,
       wallet: walletData.address || "",
       email: user.email || "",
       name: user.name || "",
       image: user.image || "",
     };
   }
+  
+  static async getProfile(wallet: string) {
+    let user = await Users.findOne({ where: { wallet } });
 
-  static async putPerfil(
+    if (!user) throw ResponseUtils.error(ResponseCode.WARNING, "warning", "Usuario no registrado");
+    
+    return {
+      wallet,
+      email: user.email || "",
+      name: user.name || "",
+      image: user.image || "",
+      headingQuantity: user.headingQuantity || "",
+      heading: user.heading || "",
+      ladnName: user.ladnName || "",
+      landAddress: user.landAddress || "",
+    };
+  }
+  
+  static async putProfile(
     seedPhrase: string,
     data: {
       email?: string;
@@ -77,7 +114,7 @@ export default class WalletService {
       ladnName?: string;
       landAddress?: string;
     }
-  ): Promise<perfilInterface> {
+  ): Promise<profileInterface> {
     const walletData: walletInterface = await walletUtils.parseFromSeedPhrase(
       seedPhrase
     );
