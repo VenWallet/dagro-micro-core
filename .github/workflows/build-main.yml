@@ -27,4 +27,4 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/dagro-micro-core:latest
+          tags: ${{ secrets.DOCKER_USERNAME }}/dagro-micro-core-test:latest
