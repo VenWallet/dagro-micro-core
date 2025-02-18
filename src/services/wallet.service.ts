@@ -91,17 +91,6 @@ export default class WalletService {
 
     if (!user) throw ResponseUtils.error(ResponseCode.WARNING, "warning", "Usuario no registrado");
 
-    console.log( {
-      wallet,
-      email: user.email,
-      name: user.name,
-      image: user.image,
-      headingQuantity: user.headingQuantity,
-      heading: user.heading?.id,
-      ladnName: user.ladnName,
-      landAddress: user.landAddress,
-    })
-
     return {
       wallet,
       email: user.email,
