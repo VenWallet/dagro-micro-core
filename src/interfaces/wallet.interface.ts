@@ -1,3 +1,5 @@
+import { Headings } from "../entities";
+
 export interface walletInterface {
   seedPhrase: string;
   publicKey: string;
@@ -20,7 +22,7 @@ export interface profileInterface {
   name: string;
   image: string;
   headingQuantity: string;
-  heading: string;
+  heading: Headings | null;
   ladnName: string;
   landAddress: string;
 }

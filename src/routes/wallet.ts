@@ -35,7 +35,7 @@ router.get('/get-grofile', authMiddleware, walletController.getProfile)
 
 router.get('/get-headings', authMiddleware, walletController.getHeadings)
 
-router.post('/put-profile', authMiddleware, walletController.putProfile)
+router.put('/put-profile', authMiddleware, walletController.putProfile)
 
 
 export { router }

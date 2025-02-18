@@ -5,9 +5,10 @@ import {
   BaseEntity,
   CreateDateColumn,
   Index,
-  
+  ManyToOne,
 } from "typeorm";
 
+import { Headings } from "./";
 
 @Entity({ name: "users" })
 @Index(["id", "email"])
@@ -41,10 +42,8 @@ export class Users extends BaseEntity {
   })
   wallet!: string;
 
-  @Column({
-    nullable: true,
-  })
-  heading!: string;
+  @ManyToOne(() => Headings, heading => heading.id, { nullable: true })
+  heading!: Headings;
 
   @Column({
     nullable: true,
