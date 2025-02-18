@@ -33,7 +33,9 @@ router.post('/login-seed-phrase', walletController.loginSeedPhrase)
 
 router.get('/get-grofile', authMiddleware, walletController.getProfile)
 
+router.get('/get-headings', authMiddleware, walletController.getHeadings)
 
+router.post('/put-profile', authMiddleware, walletController.putProfile)
 
 
 export { router }
