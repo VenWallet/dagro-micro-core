@@ -79,27 +79,38 @@ export default class WalletService {
 
     return {
       token,
-      wallet: walletData.address || "",
-      email: user.email || "",
-      name: user.name || "",
-      image: user.image || "",
+      wallet: walletData.address,
+      email: user.email,
+      name: user.name,
+      image: user.image,
     };
   }
   
   static async getProfile(wallet: string) {
-    let user = await Users.findOne({ where: { wallet } });
+    let user = await Users.findOne({ where: { wallet }, relations: { heading: true } });
 
     if (!user) throw ResponseUtils.error(ResponseCode.WARNING, "warning", "Usuario no registrado");
-    
+
+    console.log( {
+      wallet,
+      email: user.email,
+      name: user.name,
+      image: user.image,
+      headingQuantity: user.headingQuantity,
+      heading: user.heading?.id,
+      ladnName: user.ladnName,
+      landAddress: user.landAddress,
+    })
+
     return {
       wallet,
-      email: user.email || "",
-      name: user.name || "",
-      image: user.image || "",
-      headingQuantity: user.headingQuantity || "",
-      heading: user?.heading,
-      ladnName: user.ladnName || "",
-      landAddress: user.landAddress || "",
+      email: user.email,
+      name: user.name,
+      image: user.image,
+      headingQuantity: user.headingQuantity,
+      heading: user.heading?.id,
+      ladnName: user.ladnName,
+      landAddress: user.landAddress,
     };
   }
 
@@ -113,6 +124,7 @@ export default class WalletService {
     data: {
       email?: string;
       name?: string;
+      phoneNumber?: string;
       image?: string;
       headingQuantity?: string;
       heading?: number;
@@ -121,7 +133,7 @@ export default class WalletService {
     }
   ): Promise<profileInterface> {
 
-    let user = await Users.findOne({ where: { wallet: wallet } });
+    let user = await Users.findOne({ where: { wallet: wallet }, relations: { heading: true } });
     if (!user) throw ResponseUtils.error(400, "warning", "Usuario no registrado");
 
     if(data?.heading) {
@@ -133,6 +145,7 @@ export default class WalletService {
 
     user.email = data?.email || user.email;
     user.name = data?.name || user.name;
+    user.phoneNumber = data?.phoneNumber || user.phoneNumber
     user.image = data?.image || user.image;
     user.headingQuantity = data?.headingQuantity || user.headingQuantity;
     user.ladnName = data?.ladnName || user.ladnName;
@@ -141,14 +154,15 @@ export default class WalletService {
     user.save();
 
     return {
-      wallet: wallet || "",
-      email: user?.email || "",
-      name: user?.name || "",
-      image: user?.image || "",
-      headingQuantity: user?.headingQuantity || "",
-      heading: user?.heading,
-      ladnName: user?.ladnName || "",
-      landAddress: user?.landAddress || "",
+      wallet: wallet,
+      email: user.email,
+      name: user.name,
+      phoneNumber: user.phoneNumber,
+      image: user.image,
+      headingQuantity: user.headingQuantity,
+      heading: user?.heading.id,
+      ladnName: user.ladnName,
+      landAddress: user.landAddress,
     };
   }
 
