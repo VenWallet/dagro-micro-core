@@ -20,9 +20,10 @@ export interface profileInterface {
   wallet: string;
   email: string;
   name: string;
+  phoneNumber: string;
   image: string;
   headingQuantity: string;
-  heading: Headings | null;
+  heading: number | null;
   ladnName: string;
   landAddress: string;
 }

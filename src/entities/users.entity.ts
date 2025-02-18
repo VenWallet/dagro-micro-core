@@ -17,22 +17,27 @@ export class Users extends BaseEntity {
   id!: number;
   
   @Column({
-    nullable: true
+    default: " "
   })
   email!: string;
 
   @Column({
-    nullable: true,
+    default: " "
   })
   name!: string;
 
   @Column({
-    nullable: true,
+    default: " "
+  })
+  phoneNumber!: string;
+  
+  @Column({
+    default: " "
   })
   ladnName!: string;
 
   @Column({
-    nullable: true,
+    default: " "
   })
   landAddress!: string;
 
@@ -46,12 +51,12 @@ export class Users extends BaseEntity {
   heading!: Headings;
 
   @Column({
-    nullable: true,
+    default: "0"
   })
   headingQuantity!: string;
 
   @Column({
-    nullable: true,
+    default: " "
   })
   image!: string;
 

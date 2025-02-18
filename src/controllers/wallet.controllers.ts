@@ -88,6 +88,8 @@ export default class WalletController {
           req.body.image = routeImage;
 
           const data = { ...req.body };
+
+          console.log("data:", data)
           
           
           return res.send(await WalletService.putProfile(req.user?.wallet! , data));
