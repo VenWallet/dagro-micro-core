@@ -7,7 +7,7 @@ import { Not, In } from "typeorm";
 import * as XLSX from "xlsx";
 import { Response } from "express";
 import axios from "axios";
-import { Users } from "../entities";
+import { Headings, Users } from "../entities";
 import {
   loginInterface,
   profileInterface,
@@ -102,9 +102,14 @@ export default class WalletService {
       landAddress: user.landAddress || "",
     };
   }
+
+  static async getHeadings() {
+      const headings = await Headings.find({ where: { isActive: true } });
+      return headings;
+  }
   
   static async putProfile(
-    seedPhrase: string,
+    wallet: string,
     data: {
       email?: string;
       name?: string;
@@ -115,11 +120,8 @@ export default class WalletService {
       landAddress?: string;
     }
   ): Promise<profileInterface> {
-    const walletData: walletInterface = await walletUtils.parseFromSeedPhrase(
-      seedPhrase
-    );
 
-    let user = await Users.findOne({ where: { wallet: walletData.address } });
+    let user = await Users.findOne({ where: { wallet: wallet } });
 
     if (!user) throw ResponseUtils.error(400, "warning", "Usuario no registrado");
 
@@ -134,7 +136,7 @@ export default class WalletService {
     user.save();
 
     return {
-      wallet: walletData.address || "",
+      wallet: wallet || "",
       email: user.email || "",
       name: user.name || "",
       image: user.image || "",
