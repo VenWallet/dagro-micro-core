@@ -97,7 +97,7 @@ export default class WalletService {
       name: user.name || "",
       image: user.image || "",
       headingQuantity: user.headingQuantity || "",
-      heading: user.heading || "",
+      heading: user?.heading,
       ladnName: user.ladnName || "",
       landAddress: user.landAddress || "",
     };
@@ -115,21 +115,26 @@ export default class WalletService {
       name?: string;
       image?: string;
       headingQuantity?: string;
-      heading?: string;
+      heading?: number;
       ladnName?: string;
       landAddress?: string;
     }
   ): Promise<profileInterface> {
 
     let user = await Users.findOne({ where: { wallet: wallet } });
-
     if (!user) throw ResponseUtils.error(400, "warning", "Usuario no registrado");
+
+    if(data?.heading) {
+      let headingData = await Headings.findOne({ where: { id: data.heading } });
+      if (!headingData) throw ResponseUtils.error(400, "warning", "Rubro no registrado");
+
+      user.heading = headingData;
+    }
 
     user.email = data?.email || user.email;
     user.name = data?.name || user.name;
     user.image = data?.image || user.image;
     user.headingQuantity = data?.headingQuantity || user.headingQuantity;
-    user.heading = data?.heading || user.heading;
     user.ladnName = data?.ladnName || user.ladnName;
     user.landAddress = data?.landAddress || user.landAddress;
 
@@ -137,13 +142,13 @@ export default class WalletService {
 
     return {
       wallet: wallet || "",
-      email: user.email || "",
-      name: user.name || "",
-      image: user.image || "",
-      headingQuantity: user.headingQuantity || "",
-      heading: user.heading || "",
-      ladnName: user.ladnName || "",
-      landAddress: user.landAddress || "",
+      email: user?.email || "",
+      name: user?.name || "",
+      image: user?.image || "",
+      headingQuantity: user?.headingQuantity || "",
+      heading: user?.heading,
+      ladnName: user?.ladnName || "",
+      landAddress: user?.landAddress || "",
     };
   }
 
