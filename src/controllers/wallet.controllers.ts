@@ -80,6 +80,7 @@ export default class WalletController {
   
         try {
           const file = req?.file;
+          
           let routeImage;
           if(file) {
             routeImage = await uploadImage(file, 'dagro/profile');
@@ -89,10 +90,9 @@ export default class WalletController {
 
           const data = { ...req.body };
 
-          console.log("data:", data)
           
-          
-          return res.send(await WalletService.putProfile(req.user?.wallet! , data));
+          return res.send(ResponseUtils.response(200, "ok", await WalletService.putProfile(req.user?.wallet! , data)));
+
         } catch (error: any) {
           return res.status(500).send(error?.message || error);
         }

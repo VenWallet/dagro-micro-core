@@ -86,7 +86,7 @@ export default class WalletService {
     };
   }
   
-  static async getProfile(wallet: string) {
+  static async getProfile(wallet: string): Promise<profileInterface> {
     let user = await Users.findOne({ where: { wallet }, relations: { heading: true } });
 
     if (!user) throw ResponseUtils.error(ResponseCode.WARNING, "warning", "Usuario no registrado");
@@ -95,6 +95,7 @@ export default class WalletService {
       wallet,
       email: user.email,
       name: user.name,
+      phoneNumber: user.phoneNumber,
       image: user.image,
       headingQuantity: user.headingQuantity,
       heading: user.heading?.id,
