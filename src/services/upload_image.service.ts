@@ -20,7 +20,7 @@ export async function uploadImage(file: Express.Multer.File, dir: string): Promi
  try {
     // Leer el archivo desde el sistema de archivos
     const fileContent = fs.readFileSync(file.path);
-
+    
     // Configurar los parámetros para la carga
     const params: PutObjectCommandInput = {
       Bucket: process.env.AWS_STORAGE_BUCKET_NAME!,
@@ -33,6 +33,7 @@ export async function uploadImage(file: Express.Multer.File, dir: string): Promi
     // Subir el archivo a DigitalOcean Spaces
     const command = new PutObjectCommand(params);
     await s3Client.send(command);
+
     
     // Eliminar el archivo temporal
     fs.unlinkSync(file.path);
