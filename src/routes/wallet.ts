@@ -31,7 +31,7 @@ router.get('/status', walletController.status)
  */
 router.post('/login-seed-phrase', walletController.loginSeedPhrase)
 
-router.get('/get-grofile', authMiddleware, walletController.getProfile)
+router.get('/get-profile', authMiddleware, walletController.getProfile)
 
 router.get('/get-headings', authMiddleware, walletController.getHeadings)
 
