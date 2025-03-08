@@ -32,6 +32,6 @@ export interface functionCallInterface {
   contractId: string;
   methodName: string;
   args: any;
-  gas?: string;
-  attachedDeposit?: string;
+  gas: string | undefined;
+  attachedDeposit: string | undefined;
 };
