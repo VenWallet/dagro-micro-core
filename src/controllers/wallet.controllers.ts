@@ -111,7 +111,7 @@ export default class WalletController {
     try {
       const { seedPhrase, data } = req.body;
       const dataFinal: functionCallInterface = data as functionCallInterface;
-
+    
       res.send(ResponseUtils.response(200, "ok", await WalletService.functionCall(seedPhrase, dataFinal)));
     } catch (error: any) {
       const dataError: responseInterface = ResponseUtils.responseError(error);
