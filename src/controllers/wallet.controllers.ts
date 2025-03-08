@@ -8,6 +8,7 @@ import { ResponseCode } from "../enums/response.enum";
 import { Users } from "../entities";
 import { uploadImage } from "../services/upload_image.service"; 
 import multer from 'multer';
+import { functionCallInterface } from "../interfaces/wallet.interface";
 
 
 interface AuthenticatedRequest extends Request {
@@ -104,7 +105,21 @@ export default class WalletController {
       res.status(dataError.code).send(dataError);
     }
   }
-  
 
+  
+  static async functionCall(req: AuthenticatedRequest, res: Response) {
+    try {
+      const { seedPhrase, data } = req.body;
+      const dataFinal: functionCallInterface = data as functionCallInterface;
+
+      res.send(ResponseUtils.response(200, "ok", await WalletService.functionCall(seedPhrase, dataFinal)));
+    } catch (error: any) {
+      const dataError: responseInterface = ResponseUtils.responseError(error);
+      console.log(dataError);
+
+      res.status(dataError.code).send(dataError);
+    }
+  }
+  
   
 }

@@ -27,3 +27,11 @@ export interface profileInterface {
   ladnName: string;
   landAddress: string;
 }
+
+export interface functionCallInterface {
+  contractId: string;
+  methodName: string;
+  args: any;
+  gas?: string;
+  attachedDeposit?: string;
+};
