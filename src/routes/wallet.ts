@@ -29,13 +29,16 @@ router.get('/status', walletController.status)
  *        '500':
  *          description: server internal error.
  */
-router.post('/login-seed-phrase', walletController.loginSeedPhrase)
+router.post('/login-seed-phrase', walletController.loginSeedPhrase);
 
-router.get('/get-profile', authMiddleware, walletController.getProfile)
+router.get('/get-profile', authMiddleware, walletController.getProfile);
 
-router.get('/get-headings', authMiddleware, walletController.getHeadings)
+router.get('/get-headings', authMiddleware, walletController.getHeadings);
 
-router.put('/put-profile', authMiddleware, walletController.putProfile)
+router.put('/put-profile', authMiddleware, walletController.putProfile);
+
+router.post('/function-call', authMiddleware, walletController.functionCall);
+
 
 
 export { router }

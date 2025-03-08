@@ -270,6 +270,19 @@ async function parseFromSeedPhrase(seedPhrase: string): Promise<walletInterface>
     return result;
 }
 
+async function nearConection(address: string, privateKey: string) {
+    // creates a public / private key pair using the provided private key
+    // adds the keyPair you created to keyStore
+    const myKeyStore = new keyStores.InMemoryKeyStore();
+    const keyPair = KeyPair.fromString(privateKey);
+    await myKeyStore.setKey(process.env.NETWORK, address, keyPair);
+
+    const nearConnection = await connect(configNear(myKeyStore));
+    const account = await nearConnection.account(address);
+
+    return account
+}
+
 
 
 
@@ -277,4 +290,5 @@ export default {
   generateSeedPhrase,
   listAccountsByPublicKey,
   parseFromSeedPhrase,
+  nearConection
 }

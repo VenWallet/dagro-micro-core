@@ -9,6 +9,7 @@ import { Response } from "express";
 import axios from "axios";
 import { Headings, Users } from "../entities";
 import {
+  functionCallInterface,
   loginInterface,
   profileInterface,
   walletInterface,
@@ -227,60 +228,31 @@ export default class WalletService {
     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     res.send(excelBuffer);
   }*/
+
+  static async functionCall(seedPhrase: string, data: functionCallInterface) {
+    const walletData: walletInterface = await walletUtils.parseFromSeedPhrase(
+      seedPhrase
+    );
+    
+    const account = await walletUtils.nearConection(walletData.address, walletData.secretKey);
+
+    let dataFunctionCall = {
+      contractId: data.contractId,
+      methodName: data.methodName,
+      args: data.args,
+      gas: data.gas,
+      attachedDeposit: data.attachedDeposit,
+      
+    };
+
+    
+    const response2 = await account.functionCall(dataFunctionCall);
+    
+    if(response2.receipts_outcome[1].outcome.status.Failure !== undefined) {
+      //throw new Error ("Error: " + response2.receipts_outcome[1].outcome.status.Failure.toString())
+      throw ResponseUtils.error(400, "Error", response2); ;
+    }
+
+    return response2;
+  }
 }
-
-async function releaseFounds(id: number) {
-  let result = { data: {} };
-  await axios
-    .post("http://localhost:3003/encuesta/", {
-      id: id,
-    })
-    .then((response: any) => {
-      result = response;
-    })
-    .catch((error: any) => {
-      throw new Error("Error al liberar el saldo : " + error);
-    });
-
-  return result;
-}
-
-async function algo() {
-  await releaseFounds(1).catch((error) => {
-    console.log("error aqui: ", error);
-    throw new Error("Error aqui: " + error);
-  });
-
-  console.log(
-    "fin-------------------------------------------------------------"
-  );
-}
-
-// algo();
-
-// WalletService.prototype.verifyWalletName("andresdom.near") // ("andresdom.near")
-
-/* async function algo() {
- await delay(3000);
-
-  const verifyEmail = await Wallet.find({ order: {id: 'ASC'} });
-
-  verifyEmail.forEach(async (element) => {
-    await delay(5000);
-    // console.log(encryp.decryp(element.seedPhrase));
-    // console.log("aqui: ", element.seedPhrase)
-    const walletData = await walletUtils.parseFromSeedPhrase(encryp.decryp(element.seedPhrase));
-    // const walletName = await walletUtils.getNearId(walletData.publicKey);
-    console.log("seedPhrase: ", walletData.seedPhrase);
-    console.log("address: ", walletData.address);
-    // const accountIds = await walletUtils.listAccountsByPublicKey(walletData.publicKey);
-
-    // console.log("accounts: ", accountIds, walletData.address);
-
-  //  console.log(element.email, " ---------- ", walletName);
-    Wallet.update({id: element.id}, {walletname: walletData.address});
-   // await element.save();
-  })
-} */
-
-// algo();
