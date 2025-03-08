@@ -250,7 +250,7 @@ export default class WalletService {
     
     if(response2.receipts_outcome[1].outcome.status.Failure !== undefined) {
       //throw new Error ("Error: " + response2.receipts_outcome[1].outcome.status.Failure.toString())
-      throw ResponseUtils.error(400, "Error", response2); ;
+      throw ResponseUtils.error(400, "Error", response2);
     }
 
     return response2;

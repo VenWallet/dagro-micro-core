@@ -2,6 +2,7 @@ import multer from 'multer';
 import { S3Client, PutObjectCommand, PutObjectCommandInput } from '@aws-sdk/client-s3';
 import path from 'path';
 import fs from 'fs';
+import ResponseUtils from '../utils/response.utils';
 
 
 // Configurar el cliente S3 de aws-sdk
@@ -45,7 +46,7 @@ export async function uploadImage(file: Express.Multer.File, dir: string): Promi
     return url;
     
   } catch (error: any) {
-    throw `500 - ${error?.message || error}`;
+    throw ResponseUtils.error(500, "Error", error);
   }
 }
 
