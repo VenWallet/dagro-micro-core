@@ -242,11 +242,14 @@ export default class WalletService {
       args: data.args,
       gas: data.gas,
       attachedDeposit: data.attachedDeposit,
-      
     };
-
     
-    const response2 = await account.functionCall(dataFunctionCall);
+    let response2;
+    try {
+      response2 = await account.functionCall(dataFunctionCall);
+    } catch (error: any) {
+      throw ResponseUtils.error(400, "Error", error);
+    }
     
     if(response2.receipts_outcome[1].outcome.status.Failure !== undefined) {
       //throw new Error ("Error: " + response2.receipts_outcome[1].outcome.status.Failure.toString())

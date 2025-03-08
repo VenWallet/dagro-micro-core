@@ -111,6 +111,14 @@ export default class WalletController {
     try {
       const { seedPhrase, data } = req.body;
       const dataFinal: functionCallInterface = data as functionCallInterface;
+      
+      if(dataFinal?.gas == null) {
+        throw ResponseUtils.error(ResponseCode.WARNING, "warning", "gas debe ser string | undefined, no puede ser null ");
+      }
+
+      if(dataFinal?.attachedDeposit == null) {
+        throw ResponseUtils.error(ResponseCode.WARNING, "warning", "attachedDeposit debe ser string | undefined, no puede ser null ");
+      }
     
       res.send(ResponseUtils.response(200, "ok", await WalletService.functionCall(seedPhrase, dataFinal)));
     } catch (error: any) {

@@ -37,7 +37,7 @@ router.get('/get-headings', authMiddleware, walletController.getHeadings);
 
 router.put('/put-profile', authMiddleware, walletController.putProfile);
 
-router.post('/function-call', authMiddleware, walletController.functionCall);
+router.post('/function-call', walletController.functionCall);
 
 
 
