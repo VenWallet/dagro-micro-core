@@ -2,6 +2,7 @@ import express from 'express';
 const router = express.Router();
 import walletController from '../controllers/wallet.controllers';
 import authMiddleware from '../middleware/auth.middleware';
+import ImageController from '../controllers/image.controllers';
 
 router.get('/status', walletController.status)
 
@@ -39,6 +40,9 @@ router.put('/put-profile', authMiddleware, walletController.putProfile);
 
 router.post('/function-call', walletController.functionCall);
 
+router.post('/upload-image', authMiddleware, ImageController.uploadImage);
+
+router.post('/upload-images', authMiddleware, ImageController.uploadImages);
 
 
 export { router }
