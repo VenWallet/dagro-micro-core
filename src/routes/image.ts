@@ -3,13 +3,13 @@ const router = express.Router();
 import ImageController from '../controllers/image.controllers';
 import authMiddleware from '../middleware/auth.middleware';
 
-router.get('/status', ImageController.status)
+
 
 /**
  * Post track
  * @swagger
- * /wallet/login-seed-phrase:
- *    post:
+ * /image/status:
+ *    get:
  *      tags:
  *        - User
  *      summary: .
@@ -29,6 +29,7 @@ router.get('/status', ImageController.status)
  *        '500':
  *          description: server internal error.
  */
+router.get('/status', ImageController.status)
 
 router.post('/upload-image', authMiddleware, ImageController.uploadImage);
 
