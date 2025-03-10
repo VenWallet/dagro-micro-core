@@ -151,7 +151,7 @@ export default class WalletService {
       phoneNumber: user.phoneNumber,
       image: user.image,
       headingQuantity: user.headingQuantity,
-      heading: user?.heading.id,
+      heading: user?.heading?.id,
       ladnName: user.ladnName,
       landAddress: user.landAddress,
     };
