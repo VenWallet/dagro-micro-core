@@ -30,9 +30,9 @@ router.get('/status', ImageController.status)
  *          description: server internal error.
  */
 
-router.post('/upload-image', ImageController.uploadImage);
+router.post('/upload-image', authMiddleware, ImageController.uploadImage);
 
-router.post('/upload-images', ImageController.uploadImages);
+router.post('/upload-images', authMiddleware, ImageController.uploadImages);
 
 
 
