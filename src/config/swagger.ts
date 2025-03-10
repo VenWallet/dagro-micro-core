@@ -39,12 +39,17 @@ const swaggerDefinition: OAS3Definition = {
       description:
         "...",
     },
+    {
+      name: "image",
+      description:
+        "...",
+    },
   ],
   components: {
     securitySchemes: {
       bearerAuth: {
         type: "http",
-        scheme: "bearer",
+        scheme: "Token",
       },
     },
   },
