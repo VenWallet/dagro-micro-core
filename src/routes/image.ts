@@ -32,6 +32,8 @@ router.get('/status', ImageController.status)
 
 router.post('/upload-image', authMiddleware, ImageController.uploadImage);
 
+router.post('/upload-images', authMiddleware, ImageController.uploadImages);
+
 
 
 export { router }
