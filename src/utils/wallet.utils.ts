@@ -5,6 +5,7 @@ import {configNear} from '../config/nearConfig';
 import encryp from "./encryp";
 import { accountsByPublicKey } from '@mintbase-js/data';
 import { walletInterface } from "../interfaces/wallet.interface";
+import Big from 'big.js';
 
 const nearSeedPhrase = require('near-seed-phrase');
 
@@ -28,7 +29,19 @@ const nearSeedPhrase = require('near-seed-phrase');
   //}
 } */
 
+function shortenText(text: string, maxLength: number = 20, concact?: string) {
+  return text.length > maxLength ? `${text.substring(0, maxLength)}${concact ? concact : ''}` : text;
+}
 
+const formatTokenAmount = (
+	value: string | number,
+	decimals = 18,
+	precision = 2,
+) => value && Big(value).div(Big(10).pow(decimals)).toFixed(precision);
+
+
+const parseTokenAmount = (value: string | number, decimals = 18) =>
+	value && Big(value).times(Big(10).pow(decimals)).toFixed();
 
 async function generateSeedPhrase() {
   const {seedPhrase, publicKey, secretKey} = await nearSeedPhrase.generateSeedPhrase();
@@ -270,7 +283,7 @@ async function parseFromSeedPhrase(seedPhrase: string): Promise<walletInterface>
     return result;
 }
 
-async function nearConection(address: string, privateKey: string) {
+async function nearConnection(address: string, privateKey: string) {
     // creates a public / private key pair using the provided private key
     // adds the keyPair you created to keyStore
     const myKeyStore = new keyStores.InMemoryKeyStore();
@@ -287,8 +300,11 @@ async function nearConection(address: string, privateKey: string) {
 
 
 export default {
+  shortenText,
+  formatTokenAmount,
+  parseTokenAmount,
   generateSeedPhrase,
   listAccountsByPublicKey,
   parseFromSeedPhrase,
-  nearConection
+  nearConnection
 }

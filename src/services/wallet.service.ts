@@ -234,7 +234,7 @@ export default class WalletService {
       seedPhrase
     );
     
-    const account = await walletUtils.nearConection(walletData.address, walletData.secretKey);
+    const account = await walletUtils.nearConnection(walletData.address, walletData.secretKey);
 
     let dataFunctionCall = {
       contractId: data.contractId,

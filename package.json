@@ -34,6 +34,7 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.621.0",
     "@mintbase-js/data": "^0.6.0-beta.4",
+    "@types/big.js": "^6.2.2",
     "@types/body-parser": "^1.19.2",
     "@types/express": "^4.17.17",
     "@types/morgan": "^1.9.4",
@@ -42,6 +43,7 @@
     "@types/socket.io": "^3.0.2",
     "@types/uuid": "^10.0.0",
     "axios": "^1.4.0",
+    "big.js": "^6.2.2",
     "body-parser": "^1.20.2",
     "bs58": "^5.0.0",
     "cors": "^2.8.5",
