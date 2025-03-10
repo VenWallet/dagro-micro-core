@@ -11,20 +11,20 @@ export default class ResponseUtils {
     }
   }
 
-  static error(code: number | ResponseCode, message: string, error: any, ): responseInterface {
-    let errorParse: string;  
+  static error(code: number | ResponseCode, message: string, error: any): responseInterface {
+    /*let errorParse: string;  
     if (typeof error != 'string') {
       errorParse = JSON.stringify(error);
     } else {
       errorParse = error;
-    }
+    }*/
 
 
       
     return {
       code: typeof code === "number" ? code : Number(code),
       message,
-      data: errorParse! || ""
+      data: error
     }
   }
 
