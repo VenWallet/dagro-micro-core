@@ -57,6 +57,36 @@ export default class ImageController {
 
       res.status(dataError.code).send(dataError);
     }
-  }  
+  }
+
+
+  static async uploadImages(req: AuthenticatedRequest, res: Response) {
+    try {
+      if(!req.user?.wallet) throw ResponseUtils.error(ResponseCode.WARNING, "warning", "Usuario no registrado");
+
+      upload.array('image', 12)(req, res, async (err: any) => {
+        if (err) return res.status(500).send(err?.message || err);
+  
+        try {
+          const files = req?.files as Express.Multer.File[];
+          if(!files || files.length === 0) throw ResponseUtils.error(400, "warning", "imagenes no encontradas");
+
+          const uploadPromises = files.map(file => uploadImage(file, 'dagro/others'));
+          const urls = await Promise.all(uploadPromises);
+          
+          return res.send(ResponseUtils.response(200, "ok", urls));
+
+        } catch (error: any) {
+          return res.status(500).send(error?.message || error);
+        }
+      });
+    } catch (error: any) {
+      const dataError: responseInterface = ResponseUtils.responseError(error);
+      console.log(dataError);
+
+      res.status(dataError.code).send(dataError);
+    }
+  }
+
   
 }
