@@ -62,7 +62,7 @@ export default class ImageController {
 
   static async uploadImages(req: AuthenticatedRequest, res: Response) {
     try {
-      if(!req.user?.wallet) throw ResponseUtils.error(ResponseCode.WARNING, "warning", "Usuario no registrado");
+      //if(!req.user?.wallet) throw ResponseUtils.error(ResponseCode.WARNING, "warning", "Usuario no registrado");
 
       upload.array('image', 12)(req, res, async (err: any) => {
         if (err) return res.status(500).send(err?.message || err);
