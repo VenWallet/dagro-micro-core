@@ -11,7 +11,7 @@ import authMiddleware from '../middleware/auth.middleware';
  * /image/status:
  *    get:
  *      tags:
- *        - User
+ *        - image
  *      summary: .
  *      description: .
  *      requestBody:

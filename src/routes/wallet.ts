@@ -11,7 +11,7 @@ router.get('/status', walletController.status)
  * /wallet/login-seed-phrase:
  *    post:
  *      tags:
- *        - User
+ *        - wallet
  *      summary: .
  *      description: .
  *      requestBody:
