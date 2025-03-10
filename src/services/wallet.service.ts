@@ -251,9 +251,11 @@ export default class WalletService {
       throw ResponseUtils.error(400, "Error", error);
     }
     
-    if(response2.receipts_outcome[1].outcome.status.Failure !== undefined) {
-      //throw new Error ("Error: " + response2.receipts_outcome[1].outcome.status.Failure.toString())
-      throw ResponseUtils.error(400, "Error", response2);
+    if(response2?.receipts_outcome && response2?.receipts_outcome.length > 0) {
+      if(response2.receipts_outcome[1].outcome.status.Failure !== undefined) {
+        //throw new Error ("Error: " + response2.receipts_outcome[1].outcome.status.Failure.toString())
+        throw ResponseUtils.error(400, "Error", response2);
+      }
     }
 
     return response2;
