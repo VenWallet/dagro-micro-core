@@ -1,10 +1,11 @@
 import axios from "axios";
 const nearAPI = require("near-api-js");
 const { utils, AccountService, NearUtils, KeyPair, keyStores, Near, connect } = nearAPI;
-import {configNear} from '../config/nearConfig';
+import {configNear, dataNear} from '../config/nearConfig';
 import encryp from "./encryp";
 import { accountsByPublicKey } from '@mintbase-js/data';
 import { walletInterface } from "../interfaces/wallet.interface";
+import Big from 'big.js';
 
 const nearSeedPhrase = require('near-seed-phrase');
 
@@ -27,6 +28,66 @@ const nearSeedPhrase = require('near-seed-phrase');
   
   //}
 } */
+
+function shortenText(text: string, maxLength: number = 20, concact?: string) {
+  return text.length > maxLength ? `${text.substring(0, maxLength)}${concact ? concact : ''}` : text;
+}
+
+const formatTokenAmount = (
+	value: string | number,
+	decimals = 18,
+	precision = 2,
+) => value && Big(value).div(Big(10).pow(decimals)).toFixed(precision);
+
+
+const parseTokenAmount = (value: string | number, decimals = 18) =>
+	value && Big(value).times(Big(10).pow(decimals)).toFixed();
+
+
+async function getBalanceNear(address: string) {
+	
+
+	const params: Record<string, any> = {
+		account_id: address,
+		finality: 'optimistic',
+		request_type: 'view_account',
+	};
+
+	const item = await executeQueryRpc('query', params);
+	const amount = Number(item?.data?.result?.amount || 0);
+	const storageUsage = Number(item?.data?.result?.storage_usage || 0);
+
+	const balanceWallet = amount / 1e24;
+	const reservedStorage = storageUsage / 1e5;
+	const reservedTransaction =
+		amount !== 0 ? Math.min(balanceWallet - reservedStorage, 0.05) : 0;
+	const balanceAvalible = balanceWallet - reservedStorage - reservedTransaction;
+
+	return {
+		balanceAvalible: balanceAvalible,
+		balance: balanceWallet,
+		storage: reservedStorage,
+		transaction: reservedTransaction,
+	};
+}
+
+
+function executeQueryRpc(_method: string, _params: Record<string, any>) {
+	const json = {
+		jsonrpc: '2.0',
+		id: 'dontcare',
+		method: _method,
+		params: _params,
+	};
+
+	const routeRpc = dataNear().nodeUrl;
+
+	return axios.post(routeRpc, json, {
+		headers: {
+			'Content-Type': 'application/json',
+		},
+	});
+}
 
 
 
@@ -270,13 +331,12 @@ async function parseFromSeedPhrase(seedPhrase: string): Promise<walletInterface>
     return result;
 }
 
-async function nearConection(address: string, privateKey: string) {
+async function nearConnection(address: string, privateKey: string) {
     // creates a public / private key pair using the provided private key
     // adds the keyPair you created to keyStore
     const myKeyStore = new keyStores.InMemoryKeyStore();
     const keyPair = KeyPair.fromString(privateKey);
-    await myKeyStore.setKey(process.env.NETWORK, address, keyPair);
-
+    await myKeyStore.setKey(process.env.NETWORK!, address, keyPair);
     const nearConnection = await connect(configNear(myKeyStore));
     const account = await nearConnection.account(address);
 
@@ -287,8 +347,12 @@ async function nearConection(address: string, privateKey: string) {
 
 
 export default {
+  shortenText,
+  formatTokenAmount,
+  parseTokenAmount,
+  getBalanceNear,
   generateSeedPhrase,
   listAccountsByPublicKey,
   parseFromSeedPhrase,
-  nearConection
+  nearConnection
 }

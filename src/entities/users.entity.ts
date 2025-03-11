@@ -60,6 +60,18 @@ export class Users extends BaseEntity {
   })
   image!: string;
 
+  @Column({
+    nullable: false,
+    default: " "
+  })
+  token!: string;
+
+  @Column({
+    nullable: false,
+    default: " "
+  })
+  secret!: string;
+
   @CreateDateColumn({type: "timestamptz"})
   creation_date!: Date;
 }

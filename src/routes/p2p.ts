@@ -6,6 +6,7 @@ import ImageController from '../controllers/image.controllers';
 
 router.get('/status', p2pController.status)
 
+router.post('/create-order', p2pController.createOrder)
 
 
 export { router }

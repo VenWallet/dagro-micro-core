@@ -68,18 +68,24 @@ export default class WalletService {
       seedPhrase
     );
 
+    const token: string = await this.generateToken(walletData.address);
+    const secret: string = encryp.generateSecretKey();
+    const accessKey = encryp.encrypAES(seedPhrase, secret);
+
     let user = await Users.findOne({ where: { wallet: walletData.address } });
 
     if (!user) {
       user = new Users();
       user.wallet = walletData.address;
-      user.save();
     }
 
-    const token: string = await this.generateToken(walletData.address);
+    user.secret = secret;
+    user.token = token;
+    user.save();
+
 
     return {
-      token,
+      token: `${accessKey}.${token}`,
       wallet: walletData.address,
       email: user.email,
       name: user.name,
@@ -111,10 +117,10 @@ export default class WalletService {
   }
   
   static async putProfile(
-    wallet: string,
+    seedPhrase: string,
     data: {
-      email?: string;
-      name?: string;
+      email: string;
+      name: string;
       phoneNumber?: string;
       image?: string;
       headingQuantity?: string;
@@ -123,8 +129,37 @@ export default class WalletService {
       landAddress?: string;
     }
   ): Promise<profileInterface> {
+    const walletData: walletInterface = await walletUtils.parseFromSeedPhrase(
+      seedPhrase
+    );
+    
+    const account = await walletUtils.nearConnection(walletData.address, walletData.secretKey);
 
-    let user = await Users.findOne({ where: { wallet: wallet }, relations: { heading: true } });
+    try {
+      await account.functionCall({
+        contractId: process.env.CONTRACT_P2P,
+        methodName: "put_user",
+        args: {
+          user_id: walletData.address,
+          name: data.name,
+          last_name: data.name,
+          phone: data?.phoneNumber || "000000",
+          email: data.email,
+          country: "VE",
+          campo1: "",
+          campo2: "",
+          campo3: ""
+  
+        },
+        gas: "300000000000000",
+      });
+    } catch (error: any) {
+      throw ResponseUtils.error(400, "Error", error);
+    }
+    
+    
+
+    let user = await Users.findOne({ where: { wallet: walletData.address }, relations: { heading: true } });
     if (!user) throw ResponseUtils.error(400, "warning", "Usuario no registrado");
 
     if(data?.heading) {
@@ -145,7 +180,7 @@ export default class WalletService {
     user.save();
 
     return {
-      wallet: wallet,
+      wallet: walletData.address,
       email: user.email,
       name: user.name,
       phoneNumber: user.phoneNumber,
@@ -230,12 +265,13 @@ export default class WalletService {
   }*/
 
   static async functionCall(seedPhrase: string, data: functionCallInterface) {
+    console.log("paso 1: ", seedPhrase.trim())
     const walletData: walletInterface = await walletUtils.parseFromSeedPhrase(
-      seedPhrase
+      seedPhrase.trim()
     );
-    
-    const account = await walletUtils.nearConection(walletData.address, walletData.secretKey);
-
+    console.log("paso 2: ", walletData.address)
+    const account = await walletUtils.nearConnection(walletData.address, walletData.secretKey);
+    console.log("paso 3")
     let dataFunctionCall = {
       contractId: data.contractId,
       methodName: data.methodName,
