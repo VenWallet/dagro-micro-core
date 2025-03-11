@@ -336,8 +336,7 @@ async function nearConnection(address: string, privateKey: string) {
     // adds the keyPair you created to keyStore
     const myKeyStore = new keyStores.InMemoryKeyStore();
     const keyPair = KeyPair.fromString(privateKey);
-    await myKeyStore.setKey(process.env.NETWORK, address, keyPair);
-
+    await myKeyStore.setKey(process.env.NETWORK!, address, keyPair);
     const nearConnection = await connect(configNear(myKeyStore));
     const account = await nearConnection.account(address);
 

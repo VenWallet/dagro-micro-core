@@ -13,6 +13,7 @@ import { functionCallInterface } from "../interfaces/wallet.interface";
 
 interface AuthenticatedRequest extends Request {
   user?: Users;
+  seedPhrase?: string;
 }
 
 // Configurar multer para manejar la carga de archivos
@@ -32,20 +33,11 @@ export default class WalletController {
   }
 
 
-  static async createOrder(req: Request, res: Response) {
+  static async createOrder(req: AuthenticatedRequest, res: Response) {
     try {
-      const { seedPhrase, data } = req.body;
+      const {  offerId, paymentMethodId, amountOrder } = req.body;
       
-      if (!seedPhrase)
-        throw ResponseUtils.error(ResponseCode.WARNING, "warning", "seedPhrase es requerido");
-
-      /*seedPhrase: string, data: {
-        offerId: number,
-        paymentMethodId: number,
-        amountOrder: string,
-      }*/
-      
-      res.send(ResponseUtils.response(200, "ok", await P2ptService.createOrder(seedPhrase, data)));
+      res.send(ResponseUtils.response(200, "ok", await P2ptService.createOrder(req.seedPhrase!, { offerId, paymentMethodId, amountOrder })));
     } catch (error: any) {
       const dataError: responseInterface = ResponseUtils.responseError(error);
       console.log(dataError);

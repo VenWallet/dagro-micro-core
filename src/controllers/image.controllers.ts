@@ -13,6 +13,7 @@ import { functionCallInterface } from "../interfaces/wallet.interface";
 
 interface AuthenticatedRequest extends Request {
   user?: Users;
+  seedPhrase?: string;
 }
 
 // Configurar multer para manejar la carga de archivos
@@ -20,7 +21,7 @@ const upload = multer({ dest: 'dagro/' });
 
 export default class ImageController {
   
-  static async status(req: Request, res: Response) {
+  static async status(req: AuthenticatedRequest, res: Response) {
     try {
       res.send(ResponseUtils.response(200, "ok", "todo bien"));
     } catch (error: any) {

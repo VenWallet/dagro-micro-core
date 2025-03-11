@@ -13,6 +13,7 @@ import { functionCallInterface } from "../interfaces/wallet.interface";
 
 interface AuthenticatedRequest extends Request {
   user?: Users;
+  seedPhrase?: string;
 }
 
 // Configurar multer para manejar la carga de archivos
@@ -92,7 +93,7 @@ export default class WalletController {
           const data = { ...req.body };
 
           
-          return res.send(ResponseUtils.response(200, "ok", await WalletService.putProfile(req.user?.wallet! , data)));
+          return res.send(ResponseUtils.response(200, "ok", await WalletService.putProfile(req.seedPhrase! , data)));
 
         } catch (error: any) {
           return res.status(500).send(error?.message || error);
@@ -109,20 +110,18 @@ export default class WalletController {
   
   static async functionCall(req: AuthenticatedRequest, res: Response) {
     try {
-      const { seedPhrase, data } = req.body;
-      const dataFinal: functionCallInterface = data as functionCallInterface;
-      console.log(dataFinal);
-      console.log("gas: ", dataFinal?.gas);
+      const data = req.body as functionCallInterface;
+      //const dataFinal: functionCallInterface = data as functionCallInterface;
       
-      if(dataFinal.gas === null) {
+      if(data.gas === null) {
         throw ResponseUtils.error(ResponseCode.WARNING, "warning", "gas debe ser string | undefined, no puede ser null ");
       }
 
-      if(dataFinal.attachedDeposit === null) {
+      if(data.attachedDeposit === null) {
         throw ResponseUtils.error(ResponseCode.WARNING, "warning", "attachedDeposit debe ser string | undefined, no puede ser null ");
       }
     
-      res.send(ResponseUtils.response(200, "ok", await WalletService.functionCall(seedPhrase, dataFinal)));
+      res.send(ResponseUtils.response(200, "ok", await WalletService.functionCall(req.seedPhrase!, data)));
     } catch (error: any) {
       const dataError: responseInterface = ResponseUtils.responseError(error);
       console.log(dataError);

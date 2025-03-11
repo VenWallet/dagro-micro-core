@@ -29,7 +29,7 @@ import authMiddleware from '../middleware/auth.middleware';
  *        '500':
  *          description: server internal error.
  */
-router.get('/status', ImageController.status)
+router.get('/status', authMiddleware, ImageController.status)
 
 router.post('/upload-image', authMiddleware, ImageController.uploadImage);
 
