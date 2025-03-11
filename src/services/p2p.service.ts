@@ -53,23 +53,26 @@ export default class P2pService {
   }
 */
   static async createOrderToken(seedPhrase: string, data: {
-    typeOperation: String,
-    token: string,
     offerId: number,
     paymentMethodId: number,
     amountOrder: string,
   }) {
     try {
+      const typeOperation: String = "SELL";
 
       // TODO: obtener balance near de la cuenta del usuario
       const balanceNear: string = "1.1005"; 
 
       // TODO: buscar la oferta segun el typo y el id subministrado en el graph
-      const selectedOffer: {id: string, exchange_rate: string} = {id: "1", exchange_rate: "1.0"};
+      const selectedOffer: {id: string, exchange_rate: string} = {id: data.offerId.toString(), exchange_rate: "1"};
 
 
       // TODO: buscar el token seleccionado de una lista propia, consultar con andres
-      const selectedToken: {decimals: number, contract: string} = {decimals: 18, contract: ""};
+      const selectedToken: {decimals: number, contract: string, token: string} = {
+        decimals: 6,
+        contract: "usdt.tether-token.near",
+        token: "USDT"
+      };
 
 
       const walletData: walletInterface = await walletUtils.parseFromSeedPhrase(
@@ -93,11 +96,11 @@ export default class P2pService {
       let getTokenActivo = null;
       try {
         getTokenActivo = await account.viewFunction({
-          contractId: data.token,
+          contractId: selectedToken.contract,
           methodName: 'storage_balance_of',
           args: {
             account_id:
-              data.typeOperation == 'SELL'
+              typeOperation == 'SELL'
                 ? `${addressShort}.${CONTRACT_NAME}`
                 : walletData.address,
           },
@@ -123,7 +126,7 @@ export default class P2pService {
         throw ResponseUtils.error(400, 'warning', 'Deposite al menos 0.0005 NEAR para iniciar la transacción');
       }
       //console.log("paso 5")
-      if (data.typeOperation == 'SELL') {
+      if (typeOperation == 'SELL') {
         subcontract = await account.viewFunction({
           contractId: CONTRACT_NAME,
           methodName: 'get_subcontract',
@@ -133,7 +136,7 @@ export default class P2pService {
       }
   
       //console.log("paso 6 ", subcontract?.contract)
-      if (data.typeOperation == 'SELL' && subcontract == null) {
+      if (typeOperation == 'SELL' && subcontract == null) {
         subcontract = { contract: `${addressShort}.${CONTRACT_NAME}` };
         await account.functionCall({
           contractId: CONTRACT_NAME,
@@ -152,7 +155,7 @@ export default class P2pService {
           methodName: 'storage_deposit',
           args: {
             account_id:
-              data.typeOperation == 'SELL' ? subcontract?.contract : walletData.address,
+              typeOperation == 'SELL' ? subcontract?.contract : walletData.address,
           },
           gas: 30000000000000n,
           attachedDeposit: 1250000000000000000000n,
@@ -161,7 +164,7 @@ export default class P2pService {
         console.log(activarSubcuenta);
       }
       //console.log("paso 8")
-      if (data.typeOperation == 'SELL') {
+      if (typeOperation == 'SELL') {
         await account.functionCall({
           contractId: selectedToken.contract,
           methodName: 'ft_transfer',
@@ -178,7 +181,7 @@ export default class P2pService {
         methodName: 'accept_offer',
         gas: 120000000000000n,
         args: {
-          offer_type: data.typeOperation == 'SELL' ? 1 : 2,
+          offer_type: typeOperation == 'SELL' ? 1 : 2,
           offer_id: parseInt(selectedOffer.id),
           amount: amountOrderParse,
           payment_method: parseInt(data.paymentMethodId.toString()),
@@ -200,7 +203,7 @@ export default class P2pService {
   }
 
 
-  static async createOrderNear(seedPhrase: string, data: {
+  /* static async createOrderNear(seedPhrase: string, data: {
     typeOperation: String;
     token: string,
     offerId: number,
@@ -308,5 +311,6 @@ export default class P2pService {
       throw error;
     }
   }
+    */
   
 }
