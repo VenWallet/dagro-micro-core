@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-//import WalletService from "../services/wallet.service";
+import P2ptService from "../services/p2p.service";
 import axios from "axios";
 import { Code } from "typeorm";
 import { responseInterface } from "../interfaces/response.interface";
@@ -31,6 +31,28 @@ export default class WalletController {
     }
   }
 
+
+  static async createOrder(req: Request, res: Response) {
+    try {
+      const { seedPhrase, data } = req.body;
+      
+      if (!seedPhrase)
+        throw ResponseUtils.error(ResponseCode.WARNING, "warning", "seedPhrase es requerido");
+
+      /*seedPhrase: string, data: {
+        offerId: number,
+        paymentMethodId: number,
+        amountOrder: string,
+      }*/
+      
+      res.send(ResponseUtils.response(200, "ok", await P2ptService.createOrder(seedPhrase, data)));
+    } catch (error: any) {
+      const dataError: responseInterface = ResponseUtils.responseError(error);
+      console.log(dataError);
+
+      res.status(dataError.code).send(dataError);
+    }
+  }
   
   
   
