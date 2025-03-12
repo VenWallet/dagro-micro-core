@@ -105,7 +105,9 @@ export default class P2pService {
         walletData.address!.split('.')[0].length >= 64
           ? walletUtils.shortenText(walletData.address!.split('.')[0], 30)
           : walletData.address!.split('.')[0];
-      //console.log("address shorten: ", addressShort)
+      console.log("address shorten: ", addressShort)
+
+
   
       const CONTRACT_NAME: string = process.env.CONTRACT_P2P!;
       const account = await walletUtils.nearConnection(walletData.address!, walletData.secretKey!);
@@ -114,8 +116,9 @@ export default class P2pService {
         selectedToken.decimals,
       );
       let subcontract: any = {};
-      //console.log("paso 1 ", `${addressShort}.${CONTRACT_NAME}`)
+      console.log("paso 1 ", `${addressShort}.${CONTRACT_NAME}`)
       let getTokenActivo = null;
+      let getTokenActivo2 = null;
       try {
         getTokenActivo = await account.viewFunction({
           contractId: selectedToken.contract,
@@ -124,18 +127,26 @@ export default class P2pService {
             account_id: `${addressShort}.${CONTRACT_NAME}`
           },
         });
+
+        getTokenActivo2 = await account.viewFunction({
+          contractId: selectedToken.contract,
+          methodName: 'storage_balance_of',
+          args: {
+            account_id: walletData.address
+          },
+        });
       } catch (error) {
         console.log('error en getTokenActivo', error);
       }
   
-      //console.log("paso 2 ", getTokenActivo)
+      console.log("paso 2 ", getTokenActivo)
       
 
-      //console.log("paso 3")
-      if (Number(balanceNear) < 0.0126 && getTokenActivo == null) {
+      console.log("paso 3", getTokenActivo2)
+      if (Number(balanceNear) < 0.0126 && (getTokenActivo === null || getTokenActivo2 === null)) {
         throw ResponseUtils.error(400, 'warning', 'Se requiere un balance mínimo de 0.0127 NEAR para iniciar por primera vez la transacción');
       }
-      //console.log("paso 4")
+      console.log("paso 4")
       
       //console.log("paso 5")
       
@@ -144,11 +155,11 @@ export default class P2pService {
         methodName: 'get_subcontract',
         args: { user_id: walletData.address },
       });
-      //console.log("paso 5.1 ", subcontract)
+      console.log("paso 5.1 ", subcontract)
       
   
       //console.log("paso 6 ", subcontract?.contract)
-      if (subcontract == null) {
+      if (subcontract === null) {
         subcontract = { contract: `${addressShort}.${CONTRACT_NAME}` };
         await account.functionCall({
           contractId: CONTRACT_NAME,
@@ -161,7 +172,7 @@ export default class P2pService {
         //console.log(createSubCobtractUser);
       }
       //console.log("paso 7")
-      if (getTokenActivo == null) {
+      if (getTokenActivo === null) {
         const activarSubcuenta = await account.functionCall({
           contractId: selectedToken.contract,
           methodName: 'storage_deposit',
@@ -173,6 +184,19 @@ export default class P2pService {
         });
         console.log('storage_deposit');
         console.log(activarSubcuenta);
+      }
+      if (getTokenActivo2 === null) {
+        const activarCuenta = await account.functionCall({
+          contractId: selectedToken.contract,
+          methodName: 'storage_deposit',
+          args: {
+            account_id: walletData.address,
+          },
+          gas: 30000000000000n,
+          attachedDeposit: 1250000000000000000000n,
+        });
+        console.log('storage_deposit');
+        console.log(activarCuenta);
       }
       //console.log("paso 8")
       
@@ -212,6 +236,149 @@ export default class P2pService {
       throw error;
     }
   }
+
+
+
+  static async aproveOrder(seedPhrase: string, orderId: number): Promise<string> {
+    try {
+      const walletData: walletInterface = await walletUtils.parseFromSeedPhrase(
+        seedPhrase
+      );
+      
+      //const val = data.typeOperation === "SELL" ? "1" : "2";
+      //const type = data.typeOperation === "SELL" ? "VENTA" : "COMPRA";// sessionStorage.getItem('operation') === "SELL" ? "VENTA" : "COMPRA";
+      const val = "1"
+      const type = "VENTA"
+      const CONTRACT_NAME: string = process.env.CONTRACT_P2P!;
+      
+      const account = await walletUtils.nearConnection(walletData.address!, walletData.secretKey!);
+  
+      const orderConfirmation: any = await account.functionCall({
+        contractId: CONTRACT_NAME!,
+        methodName: "order_confirmation",
+        gas: 180000000000000n,
+        args: {
+          offer_type: parseInt(val),
+          order_id: parseInt(orderId.toString()),
+        },
+        attachedDeposit: 3n
+      }) 
+  
+      if (!orderConfirmation || orderConfirmation.status.SuccessValue !== "") {
+        throw ResponseUtils.error(400, 'warning', `Error confirmando la ${type}`);
+      }
+  
+      
+      try {
+        const contract = await account.viewFunction({
+          contractId: CONTRACT_NAME!,
+          methodName: "get_subcontract_type",
+          args: { user_id: walletData.address },
+        });
+  
+        let deleteContract: any;
+        if(contract !== 1 && val === "1"){
+          deleteContract = await account.functionCall({
+            contractId: CONTRACT_NAME!,
+            methodName: "delete_contract",
+            gas: 150000000000000n,
+            args: {},
+          });
+  
+          if (!deleteContract || deleteContract.status.SuccessValue !== "") {
+            console.log("Error borrando el contrato");
+          }
+        }
+        
+      }
+      catch (error) {
+        console.log("Error borrando el contrato", error);
+      }
+  
+      // const explorerLink = `https://nearblocks.io/es/txns/${orderConfirmation.transaction.hash}`;
+      const explorerLink = `https://pikespeak.ai/transaction-viewer/${orderConfirmation.transaction.hash}`;
+  
+      //await sendMail({ typeOperation: data.typeOperation, orderId: data.orderId, type: sendMailTypeEnum.APPROVE }).catch((error) => { console.log("error envio correo approved", error) });
+  
+      return explorerLink;
+    } catch (error) {
+      throw error
+    }
+  }
+  
+
+
+  
+  static async cancelOrder(seedPhrase: string, orderId: string) {
+    try {
+      const walletData: walletInterface = await walletUtils.parseFromSeedPhrase(
+        seedPhrase
+      );
+
+      const typeDesc = "VENTA";
+      const account = await walletUtils.nearConnection(walletData.address!, walletData.secretKey!);
+      const CONTRACT_NAME: string = process.env.CONTRACT_P2P!;
+
+      const orderConfirmation: any = await account.functionCall({
+        contractId: CONTRACT_NAME!,
+        methodName: "cancel_order",
+        gas: 180000000000000n,
+        args: {
+          offer_type: 1,
+          order_id: parseInt(orderId.toString()),
+        },
+        attachedDeposit: 3n
+      });
+      
+      
+      // console.log("orderConfirmation", orderConfirmation)
+      if (!orderConfirmation || orderConfirmation.status.SuccessValue !== "") {
+        throw ResponseUtils.error(400, 'warning', `Error al cancelar la ${typeDesc}`);
+      }
+
+      //await sendMail({ typeOperation: data.typeOperation, orderId: data.orderId, type: sendMailTypeEnum.CANCEL }).catch((error) => { console.log("error envio correo cancel", error) });
+
+      return true;
+    } catch (error) {
+      throw error
+    }
+  }
+
+  static async disputeOrder(seedPhrase: string, orderId: number) {
+    try {
+      const walletData: walletInterface = await walletUtils.parseFromSeedPhrase(
+        seedPhrase
+      );
+      
+      const typeDesc = "VENTA";
+      const account = await walletUtils.nearConnection(walletData.address!, walletData.secretKey!);
+      const CONTRACT_NAME: string = process.env.CONTRACT_P2P!;
+
+      const orderConfirmation: any = await account.functionCall({
+        contractId: CONTRACT_NAME!,
+        methodName: "order_dispute",
+        gas: 40000000000000n,
+        args: {
+          offer_type: 1,
+          order_id: parseInt(orderId.toString())
+        },
+        attachedDeposit: 3n
+      });
+
+      // console.log("orderConfirmation", orderConfirmation)
+      if (!orderConfirmation || orderConfirmation.status.SuccessValue !== "") {
+        throw ResponseUtils.error(400, 'warning', `Error al disputar la ${typeDesc}`);
+      }
+
+      //await sendMail({ typeOperation: data.typeOperation, orderId: data.orderId, type: sendMailTypeEnum.DISPUTE }).catch((error) => { console.log("error envio correo dispute", error) });
+
+      return true;
+      //router.push({ name: 'HomePage' });
+    } catch (error) {
+      throw error;
+    }
+  }
+
 
 
 

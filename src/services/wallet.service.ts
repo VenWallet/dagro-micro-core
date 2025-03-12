@@ -132,15 +132,14 @@ export default class WalletService {
     const walletData: walletInterface = await walletUtils.parseFromSeedPhrase(
       seedPhrase
     );
-    
-    const account = await walletUtils.nearConnection(walletData.address, walletData.secretKey);
 
-    try {
-      await account.functionCall({
-        contractId: process.env.CONTRACT_P2P,
-        methodName: "put_user",
+    await this.functionCall(
+      walletData.address,
+      walletData.secretKey,
+      {
+        contractId: process.env.CONTRACT_P2P || " ",
+        methodName: "set_user",
         args: {
-          user_id: walletData.address,
           name: data.name,
           last_name: data.name,
           phone: data?.phoneNumber || "000000",
@@ -149,13 +148,61 @@ export default class WalletService {
           campo1: "",
           campo2: "",
           campo3: ""
-  
         },
         gas: "300000000000000",
+      } as functionCallInterface
+    ).catch( async () => {
+      await this.functionCall(
+        walletData.address,
+        walletData.secretKey,
+        {
+          contractId: process.env.CONTRACT_P2P || " ",
+          methodName: "put_user",
+          args: {
+            name: data.name,
+            last_name: data.name,
+            phone: data?.phoneNumber || "000000",
+            email: data.email,
+            country: "VE"
+          },
+          gas: "300000000000000",
+        } as functionCallInterface
+      ).catch( async (error: any) => {
+        throw ResponseUtils.responseError(error);  
       });
-    } catch (error: any) {
-      throw ResponseUtils.error(400, "Error", error);
-    }
+    });
+
+    /*await account.functionCall({
+      contractId: process.env.CONTRACT_P2P,
+      methodName: "set_user",
+      args: {
+        name: data.name,
+        last_name: data.name,
+        phone: data?.phoneNumber || "000000",
+        email: data.email,
+        country: "VE",
+        campo1: "",
+        campo2: "",
+        campo3: ""
+      },
+      gas: "300000000000000",
+    }).catch( async (error: any) => {
+      await account.functionCall({
+        contractId: process.env.CONTRACT_P2P,
+        methodName: "put_user",
+        args: {
+          name: data.name,
+          last_name: data.name,
+          phone: data?.phoneNumber || "000000",
+          email: data.email,
+          country: "VE",
+        },
+        gas: "300000000000000",
+      }).catch( async (error: any) => {
+        throw ResponseUtils.error(400, "Error", error);
+      });
+    });*/
+    
     
     
 
@@ -191,86 +238,11 @@ export default class WalletService {
       landAddress: user.landAddress,
     };
   }
+  
 
-  /* async verifyGoogle(token: string) {
-    let response: any;
-
-    await GoogleAuthUtils.verifyAccesGoogle(token).then(async (result: any) => {
-      if (!result.payload["email_verified"])
-        throw new Error("Error eL email no esta verificado");
-
-      response = await walletUtils.emailRegistered(result.payload["email"]);
-    });
-
-    return response;
-  } */
-
-  /* async emailWalletImport(code: string, email: string) {
-    await this.verifyCode(code, email);
-
-    //const response = "funcion deprecada"
-
-    const response = await walletUtils.emailRegistered(email);
-
-    return response;
-  } */
-
-  /* async emailCreateNickname(code: string, email: string, nickname: string) {
-    try {
-      await this.verifyCode(code, email);
-
-      const wallet = await Wallet.findOneBy({ email: email });
-
-      if (!wallet) {
-        throw new Error("Email is not registered");
-      } else {
-        // const response = await walletUtils.createNickname(nickname, email, cedula);
-        // await Wallet.update({email:email}, {seedPhrase: encryp.encryp(response.seedPhrase), nickname: true})
-        // response.isExists = true;
-
-        return {};
-      }
-    } catch (err: any) {
-      throw new Error(err.toString());
-    }
-  } */
-
-  /*async downloadUsersAsExcel(res: Response) {
-    await delay(3000);
-    const wallets = await Wallet.find();
-
-    if(!wallets) return [];
-
-    const walletsList = wallets.map((element) => {
-      return { 
-        email: element?.email ? encryp.decryp(element.email) : "",
-        cedula: element?.cedula ? encryp.decryp(element.cedula) : "",
-        name: element?.name ? encryp.decryp(element.name) : "",
-        walletname: element?.walletname ? encryp.decryp(element.walletname) : ""
-      }
-    });
-
-    // Convertir los datos a un formato adecuado para Excel
-    const worksheet = XLSX.utils.json_to_sheet(walletsList);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Users');
-
-    // Generar el archivo Excel
-    const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'buffer' });
-
-    // Configurar la respuesta para descargar el archivo
-    res.setHeader('Content-Disposition', 'attachment; filename=users.xlsx');
-    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    res.send(excelBuffer);
-  }*/
-
-  static async functionCall(seedPhrase: string, data: functionCallInterface) {
-    console.log("paso 1: ", seedPhrase.trim())
-    const walletData: walletInterface = await walletUtils.parseFromSeedPhrase(
-      seedPhrase.trim()
-    );
-    console.log("paso 2: ", walletData.address)
-    const account = await walletUtils.nearConnection(walletData.address, walletData.secretKey);
+  static async functionCall(address: string, secretKey: string, data: functionCallInterface) {
+    console.log("paso 1: ", address)
+    const account = await walletUtils.nearConnection(address, secretKey);
     console.log("paso 3")
     let dataFunctionCall = {
       contractId: data.contractId,
@@ -284,6 +256,13 @@ export default class WalletService {
     try {
       response2 = await account.functionCall(dataFunctionCall);
     } catch (error: any) {
+      console.log("error: ", error?.type)
+      if(error?.type === "NotEnoughBalance") {
+        throw ResponseUtils.error(400, "Error", "No hay suficiente balance");
+      }
+      if(error?.type === "KeyNotFound") {
+        throw ResponseUtils.error(400, "Error", "Su cuenta esta inactiva, debe activarla con un deposito");
+      }
       throw ResponseUtils.error(400, "Error", error);
     }
     
