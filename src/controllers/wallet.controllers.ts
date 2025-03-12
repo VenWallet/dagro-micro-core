@@ -8,7 +8,8 @@ import { ResponseCode } from "../enums/response.enum";
 import { Users } from "../entities";
 import { uploadImage } from "../services/upload_image.service"; 
 import multer from 'multer';
-import { functionCallInterface } from "../interfaces/wallet.interface";
+import { functionCallInterface, walletInterface } from "../interfaces/wallet.interface";
+import walletUtils from "../utils/wallet.utils";
 
 
 interface AuthenticatedRequest extends Request {
@@ -120,8 +121,12 @@ export default class WalletController {
       if(data.attachedDeposit === null) {
         throw ResponseUtils.error(ResponseCode.WARNING, "warning", "attachedDeposit debe ser string | undefined, no puede ser null ");
       }
+
+      const walletData: walletInterface = await walletUtils.parseFromSeedPhrase(
+        req.seedPhrase!
+      );
     
-      res.send(ResponseUtils.response(200, "ok", await WalletService.functionCall(req.seedPhrase!, data)));
+      res.send(ResponseUtils.response(200, "ok", await WalletService.functionCall(walletData.address, walletData.secretKey, data)));
     } catch (error: any) {
       const dataError: responseInterface = ResponseUtils.responseError(error);
       console.log(dataError);
