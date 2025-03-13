@@ -133,7 +133,7 @@ export default class WalletController {
       const dataError: responseInterface = ResponseUtils.responseError(error);
       console.log(dataError);
 
-      res.status(dataError.code).send(dataError);
+      res.status(500).send(error);
     }
   }
   
