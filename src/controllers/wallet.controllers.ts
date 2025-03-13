@@ -38,8 +38,7 @@ export default class WalletController {
     try {
       const { seedPhrase } = req.body;
       
-      if (!seedPhrase)
-        throw ResponseUtils.error(ResponseCode.WARNING, "warning", "seedPhrase es requerido");
+      if (!seedPhrase) throw ResponseUtils.error(ResponseCode.WARNING, "warning", "seedPhrase es requerido");
       
       res.send(ResponseUtils.response(200, "ok", await WalletService.loginSeedPhrase(seedPhrase)));
     } catch (error: any) {
