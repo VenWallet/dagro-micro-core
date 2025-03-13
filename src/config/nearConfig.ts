@@ -11,7 +11,7 @@ export function dataNear() {
 				networkId: 'mainnet',
 				keyStore: undefined,
 				// nodeUrl: "https://rpc.mainnet.near.org",
-				nodeUrl: 'https://rpc.mainnet.pagoda.co',
+				nodeUrl: 'https://free.rpc.fastnear.com',//'https://rpc.mainnet.pagoda.co',
 				walletUrl: "https://app.mynearwallet.com/",
 				helperUrl: 'https://helper.mainnet.near.org',
 				explorerUrl: 'https://explorer.mainnet.near.org',

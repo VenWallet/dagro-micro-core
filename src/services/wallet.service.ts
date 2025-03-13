@@ -241,9 +241,8 @@ export default class WalletService {
   
 
   static async functionCall(address: string, secretKey: string, data: functionCallInterface) {
-    console.log("paso 1: ", address)
     const account = await walletUtils.nearConnection(address, secretKey);
-    console.log("paso 3")
+    
     let dataFunctionCall = {
       contractId: data.contractId,
       methodName: data.methodName,
@@ -256,7 +255,6 @@ export default class WalletService {
     try {
       response2 = await account.functionCall(dataFunctionCall);
     } catch (error: any) {
-      console.log("error: ", error?.type)
       if(error?.type === "NotEnoughBalance") {
         throw ResponseUtils.error(400, "Error", "No hay suficiente balance");
       }

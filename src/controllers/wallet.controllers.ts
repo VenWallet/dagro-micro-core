@@ -97,12 +97,14 @@ export default class WalletController {
           return res.send(ResponseUtils.response(200, "ok", await WalletService.putProfile(req.seedPhrase! , data)));
 
         } catch (error: any) {
-          return res.status(500).send(error?.message || error);
+          const dataError: responseInterface = ResponseUtils.responseError(error);
+
+          return res.status(dataError.code).send(dataError);
         }
       });
     } catch (error: any) {
       const dataError: responseInterface = ResponseUtils.responseError(error);
-      console.log(dataError);
+      console.log("aqui paso2", dataError);
 
       res.status(dataError.code).send(dataError);
     }
