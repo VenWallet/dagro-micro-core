@@ -113,7 +113,7 @@ export default class WalletController {
   
   static async functionCall(req: AuthenticatedRequest, res: Response) {
     try {
-      const data = req.body as functionCallInterface;
+      const data = req.body;
       //const dataFinal: functionCallInterface = data as functionCallInterface;
       
       if(data.gas === null) {
@@ -133,7 +133,7 @@ export default class WalletController {
       const dataError: responseInterface = ResponseUtils.responseError(error);
       console.log(dataError);
 
-      res.status(dataError.code).send(error);
+      res.status(500).send(error);
     }
   }
   
