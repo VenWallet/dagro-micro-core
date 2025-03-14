@@ -44,7 +44,6 @@ function delay(ms: number) {
 
   console.log("fin encryptado")
   console.log("---------------------------------------------")
-
 }*/
 
 export default class WalletService {
@@ -119,8 +118,8 @@ export default class WalletService {
 
     return {
       name: user.name,
-      image: user.image,
-      ladnName: user.ladnName,
+      image: user?.image || "",
+      ladnName: user?.ladnName || "",
     };
   }
   
