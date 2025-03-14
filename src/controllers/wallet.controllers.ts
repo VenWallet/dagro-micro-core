@@ -61,6 +61,19 @@ export default class WalletController {
     }
   }
 
+  static async getProfileCustom(req: AuthenticatedRequest, res: Response) {
+    try {
+      const { wallet } = req.params
+      ;
+      res.send(ResponseUtils.response(200, "ok", await WalletService.getProfileCustom(wallet)));
+    } catch (error: any) {
+      const dataError: responseInterface = ResponseUtils.responseError(error);
+      console.log(dataError);
+
+      res.status(dataError.code).send(dataError);
+    }
+  }
+
   static async getHeadings(req: AuthenticatedRequest, res: Response) {
     try {
       res.send(ResponseUtils.response(200, "ok", await WalletService.getHeadings()));
