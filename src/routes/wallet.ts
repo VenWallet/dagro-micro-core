@@ -34,6 +34,8 @@ router.post('/login-seed-phrase', walletController.loginSeedPhrase);
 
 router.get('/get-profile', authMiddleware, walletController.getProfile);
 
+router.get('/get-profile-custom/:wallet', authMiddleware, walletController.getProfileCustom);
+
 router.get('/get-headings', authMiddleware, walletController.getHeadings);
 
 router.put('/put-profile', authMiddleware, walletController.putProfile);

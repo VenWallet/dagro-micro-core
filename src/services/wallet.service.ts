@@ -111,6 +111,20 @@ export default class WalletService {
     };
   }
 
+
+  static async getProfileCustom(wallet: string) {
+    let user = await Users.findOne({ where: { wallet }, relations: { heading: true } });
+
+    if (!user) throw ResponseUtils.error(ResponseCode.WARNING, "warning", "Usuario no registrado");
+
+    return {
+      name: user.name,
+      image: user.image,
+      ladnName: user.ladnName,
+    };
+  }
+  
+
   static async getHeadings() {
       const headings = await Headings.find({ where: { isActive: true } });
       return headings;
