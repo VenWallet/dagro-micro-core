@@ -44,7 +44,6 @@ function delay(ms: number) {
 
   console.log("fin encryptado")
   console.log("---------------------------------------------")
-
 }*/
 
 export default class WalletService {
