@@ -119,8 +119,8 @@ export default class WalletService {
 
     return {
       name: user.name,
-      image: user.image,
-      ladnName: user.ladnName,
+      image: user?.image || "",
+      ladnName: user?.ladnName || "",
     };
   }
   
