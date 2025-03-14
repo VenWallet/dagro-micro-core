@@ -343,6 +343,28 @@ async function nearConnection(address: string, privateKey: string) {
     return account
 }
 
+function extractNearErrorMessage(nearResponse: any) {
+        if (
+          nearResponse &&
+          nearResponse.receipts_outcome &&
+          Array.isArray(nearResponse.receipts_outcome)
+        ) {
+          for (const receipt of nearResponse.receipts_outcome) {
+            if (
+              receipt.outcome &&
+              receipt.outcome.status &&
+              receipt.outcome.status.Failure &&
+              receipt.outcome.status.Failure.ActionError &&
+              receipt.outcome.status.Failure.ActionError.kind &&
+              receipt.outcome.status.Failure.ActionError.kind.FunctionCallError &&
+              receipt.outcome.status.Failure.ActionError.kind.FunctionCallError.ExecutionError
+            ) {
+              return receipt.outcome.status.Failure.ActionError.kind.FunctionCallError.ExecutionError;
+            }
+          }
+        }
+        return " ";
+      }
 
 
 
@@ -354,5 +376,6 @@ export default {
   generateSeedPhrase,
   listAccountsByPublicKey,
   parseFromSeedPhrase,
-  nearConnection
+  nearConnection,
+  extractNearErrorMessage
 }
