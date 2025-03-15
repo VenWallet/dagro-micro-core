@@ -256,14 +256,12 @@ export default class P2pService {
       dataOrder = dataLogs.outcome.logs[0];
       
 
-    
-
       return dataOrder;
 
     } catch (error) {
       const errorNear = walletUtils.extractNearErrorMessage(error);
       if(errorNear)
-        throw ResponseUtils.error(500, "smart contract error", errorNear);
+        throw ResponseUtils.error(400, "smart contract error", errorNear);
 
       throw error;
     }
@@ -333,6 +331,10 @@ export default class P2pService {
   
       return explorerLink;
     } catch (error) {
+      const errorNear = walletUtils.extractNearErrorMessage(error);
+      if(errorNear)
+        throw ResponseUtils.error(400, "smart contract error", errorNear);
+
       throw error
     }
   }
@@ -371,6 +373,10 @@ export default class P2pService {
 
       return true;
     } catch (error) {
+      const errorNear = walletUtils.extractNearErrorMessage(error);
+      if(errorNear)
+        throw ResponseUtils.error(400, "smart contract error", errorNear);
+
       throw error
     }
   }
@@ -406,6 +412,10 @@ export default class P2pService {
       return true;
       //router.push({ name: 'HomePage' });
     } catch (error) {
+      const errorNear = walletUtils.extractNearErrorMessage(error);
+      if(errorNear)
+        throw ResponseUtils.error(400, "smart contract error", errorNear);
+
       throw error;
     }
   }

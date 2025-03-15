@@ -268,12 +268,17 @@ export default class WalletService {
     try {
       response2 = await account.functionCall(dataFunctionCall);
     } catch (error: any) {
-      if(error?.type === "NotEnoughBalance") {
+      const errorNear = walletUtils.extractNearErrorMessage(error);
+      if(errorNear)
+        throw ResponseUtils.error(400, "smart contract error", errorNear);
+
+      /*if(error?.type === "NotEnoughBalance") {
         throw ResponseUtils.error(400, "Error", "No hay suficiente balance");
       }
       if(error?.type === "KeyNotFound") {
         throw ResponseUtils.error(400, "Error", "Su cuenta esta inactiva, debe activarla con un deposito");
-      }
+      }*/
+     
       throw ResponseUtils.error(400, "Error", error);
     }
     
