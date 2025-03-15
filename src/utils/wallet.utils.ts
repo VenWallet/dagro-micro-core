@@ -344,6 +344,12 @@ async function nearConnection(address: string, privateKey: string) {
 }
 
 function extractNearErrorMessage(nearResponse: any) {
+        if(nearResponse?.type === "NotEnoughBalance") {
+          return "No hay suficiente balance near en la cuenta";
+        }
+        if(nearResponse?.type === "KeyNotFound") {
+          return "Su cuenta esta inactiva, debe activarla con un deposito";
+        }
         if(nearResponse?.type == 'FunctionCallError') {
           return nearResponse?.kind?.ExecutionError || nearResponse?.kind
         }
