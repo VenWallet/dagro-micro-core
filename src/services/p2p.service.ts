@@ -66,57 +66,63 @@ export default class P2pService {
       //obtener balance near de la cuenta del usuario
       const balanceWallet: any = await walletUtils.getBalanceNear(walletData.address!);
       const balanceNear: string = balanceWallet.balanceAvalible;
-        
+      
       if (Number(balanceNear) < 0.0005) {
         throw ResponseUtils.error(400, 'warning', 'Deposite al menos 0.0005 NEAR para iniciar la transacción');
       }
 
-      //buscar la oferta segun el typo y el id subministrado en el graph
-      const queryOffer = `
-        query MyQuery($offerId: ID!) {
-          offerssell(id: $offerId) {
-            exchange_rate
-          }
-        }
-      `;
-    
-      const resultOffer = await useQuery({ query: queryOffer, variables: { offerId: data.offerId.toString() } })
-      .catch((error) => { 
-        throw ResponseUtils.error(400, 'warning', `Error al buscar la oferta - ${error}`);
-      });
-
-
-      const selectedOffer: {id: string, exchange_rate: string} = {
-        id: data.offerId.toString(),
-        exchange_rate: (resultOffer as { offerssell: { exchange_rate: string } }).offerssell.exchange_rate
-      };
-
-
-
-
+      const CONTRACT_NAME: string = process.env.CONTRACT_P2P!;
+      const account = await walletUtils.nearConnection(walletData.address!, walletData.secretKey!);
       //buscar el token seleccionado de una lista propia, consultar con andres
       const selectedToken: {decimals: number, contract: string, token: string} = {
         decimals: 6,
         contract: "usdt.tether-token.near",
         token: "USDT"
       };
+      const amountOrderParse = walletUtils.parseTokenAmount(
+        data.amountOrder,
+        selectedToken.decimals,
+      );
+
+
+      //buscar la oferta segun el typo y el id subministrado en el graph
+      const queryOffer = `
+        query MyQuery($offerId: ID!) {
+          offerssell(id: $offerId) {
+            exchange_rate
+            remaining_amount
+          }
+        }
+      `;
+    
+      
+      const resultOffer = await useQuery({ query: queryOffer, variables: { offerId: data.offerId.toString() } })
+      .catch((error) => { 
+        throw ResponseUtils.error(400, 'warning', `Error al buscar la oferta - ${error}`);
+      });
+
+
+      if(BigInt(resultOffer?.offerssell?.remaining_amount) < BigInt(data.amountOrder)) { 
+        throw ResponseUtils.error(400, 'warning', 'La cantidad de la orden es mayor a la cantidad disponible en la oferta'); 
+      }
+
+      const selectedOffer: {id: string, exchange_rate: string} = {
+        id: data.offerId.toString(),
+        exchange_rate: resultOffer?.offerssell?.exchange_rate
+      };
+      
 
       const addressShort =
         walletData.address!.split('.')[0].length >= 64
           ? walletUtils.shortenText(walletData.address!.split('.')[0], 30)
           : walletData.address!.split('.')[0];
-      console.log("address shorten: ", addressShort)
+      //console.log("address shorten: ", addressShort)
 
 
   
-      const CONTRACT_NAME: string = process.env.CONTRACT_P2P!;
-      const account = await walletUtils.nearConnection(walletData.address!, walletData.secretKey!);
-      const amountOrderParse = walletUtils.parseTokenAmount(
-        data.amountOrder,
-        selectedToken.decimals,
-      );
+      
       let subcontract: any = {};
-      console.log("paso 1 ", `${addressShort}.${CONTRACT_NAME}`)
+      //console.log("paso 1 ", `${addressShort}.${CONTRACT_NAME}`)
       let getTokenActivo = null;
       let getTokenActivo2 = null;
       try {
@@ -139,23 +145,21 @@ export default class P2pService {
         console.log('error en getTokenActivo', error);
       }
   
-      console.log("paso 2 ", getTokenActivo)
-      
+      //console.log("paso 2 ", getTokenActivo)
+      //console.log("paso 3", getTokenActivo2)
 
-      console.log("paso 3", getTokenActivo2)
       if (Number(balanceNear) < 0.0126 && (getTokenActivo === null || getTokenActivo2 === null)) {
         throw ResponseUtils.error(400, 'warning', 'Se requiere un balance mínimo de 0.0127 NEAR para iniciar por primera vez la transacción');
       }
-      console.log("paso 4")
+      //console.log("paso 4")
       
-      //console.log("paso 5")
       
       subcontract = await account.viewFunction({
         contractId: CONTRACT_NAME,
         methodName: 'get_subcontract',
         args: { user_id: walletData.address },
       });
-      console.log("paso 5.1 ", subcontract)
+      //console.log("paso 4.1 ", subcontract)
       
   
       //console.log("paso 6 ", subcontract?.contract)
@@ -171,7 +175,9 @@ export default class P2pService {
         //console.log( "create_subcontract_user");
         //console.log(createSubCobtractUser);
       }
-      //console.log("paso 7")
+      
+      //console.log("paso 5: ", subcontract)
+
       if (getTokenActivo === null) {
         const activarSubcuenta = await account.functionCall({
           contractId: selectedToken.contract,
@@ -182,8 +188,8 @@ export default class P2pService {
           gas: 30000000000000n,
           attachedDeposit: 1250000000000000000000n,
         });
-        console.log('storage_deposit');
-        console.log(activarSubcuenta);
+
+        //console.log('storage_deposit 1:', activarSubcuenta);
       }
       if (getTokenActivo2 === null) {
         const activarCuenta = await account.functionCall({
@@ -195,8 +201,8 @@ export default class P2pService {
           gas: 30000000000000n,
           attachedDeposit: 1250000000000000000000n,
         });
-        console.log('storage_deposit');
-        console.log(activarCuenta);
+
+        //console.log('storage_deposit 2: ', activarCuenta);
       }
       //console.log("paso 8")
       
@@ -207,8 +213,9 @@ export default class P2pService {
         args: { receiver_id: subcontract?.contract, amount: amountOrderParse },
         attachedDeposit: 1n,
       });
-      //console.log("ft_transfer");
-      //console.log(ftTransfer)
+      //console.log("ft_transfer: ", ftTransfer);
+      //console.log("subcontract.contract :", subcontract?.contract)
+      //console.log("amountParse: ", amountOrderParse)
       
       //console.log("paso 9")
       const acceptOffer: any = await account.functionCall({
@@ -244,7 +251,7 @@ export default class P2pService {
       let dataOrder;
       
       
-      if(!dataLogs) throw ResponseUtils.error(500, " unexpected smart contract error", walletUtils.extractNearErrorMessage(acceptOffer)); 
+      if(!dataLogs) throw ResponseUtils.error(500, "unexpected smart contract error", walletUtils.extractNearErrorMessage(acceptOffer) || acceptOffer); 
       
       dataOrder = dataLogs.outcome.logs[0];
       
@@ -254,6 +261,10 @@ export default class P2pService {
       return dataOrder;
 
     } catch (error) {
+      const errorNear = walletUtils.extractNearErrorMessage(error);
+      if(errorNear)
+        throw ResponseUtils.error(500, "smart contract error", errorNear);
+
       throw error;
     }
   }

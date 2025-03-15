@@ -344,6 +344,9 @@ async function nearConnection(address: string, privateKey: string) {
 }
 
 function extractNearErrorMessage(nearResponse: any) {
+        if(nearResponse?.type == 'FunctionCallError') {
+          return nearResponse?.kind?.ExecutionError || nearResponse?.kind
+        }
         if (
           nearResponse &&
           nearResponse.receipts_outcome &&
@@ -363,7 +366,7 @@ function extractNearErrorMessage(nearResponse: any) {
             }
           }
         }
-        return " ";
+        return undefined;
       }
 
 
