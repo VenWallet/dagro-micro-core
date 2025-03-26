@@ -18,8 +18,8 @@ const cleanName = cleanFileName(__filename);
 const swaggerDefinition: OAS3Definition = {
   openapi: "3.0.3",
   info: {
-    title: "wallet - micro service V1",
-    description: "micro service tron project wallet near",
+    title: "dagro - micro service V1",
+    description: "micro service",
     contact: {
       email: "ejemplo@gmail.com",
     },
@@ -27,15 +27,17 @@ const swaggerDefinition: OAS3Definition = {
   },
   servers: [
     {
-      url: "https://localhost:3000/wallet-near/",
-    },
-    {
-      url: "http://localhost:3000/wallet-near/",
+      url: "https://app.venwallet.xyz/testnet/dagro",//`${process.env.PROTOCOL}${process.env.HOST}:${process.env.PORT}${process.env.RUTA}`,
     },
   ],
   tags: [
     {
       name: "wallet",
+      description:
+        "...",
+    },
+    {
+      name: "p2p",
       description:
         "...",
     },
@@ -47,12 +49,19 @@ const swaggerDefinition: OAS3Definition = {
   ],
   components: {
     securitySchemes: {
-      bearerAuth: {
-        type: "http",
-        scheme: "Token",
+      tokenAuth: {
+        type: "apiKey", // Usa apiKey para esquemas personalizados
+        in: "header", // El token se enviará en el encabezado
+        name: "Authorization", // Nombre del encabezado donde se enviará el token
+        description: "Usa el formato 'Token <tu-token>' para autenticar",
       },
     },
   },
+  security: [
+    {
+      tokenAuth: [],
+    },
+  ],
 };
 
 const swaggerOptions: OAS3Options = {
