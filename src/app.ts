@@ -21,7 +21,7 @@ dotenv.config();
 process.env.TZ = "UTC";
 
 const app: Application = express();
-AppDataSource.initialize().then(() => console.log("Conexion ORM P2p Ready"));
+AppDataSource.initialize().then(() => console.log("Conexion ORM Ready"));
 
 app.set('trust proxy', true);
 
@@ -69,12 +69,14 @@ if (process.env.NODE_ENV === "production") {
     ca: ca,
   };
   server = https.createServer(credentials, app);
-  console.log("htpps");
 } else {
   server = http.createServer(app);
-  console.log("htpp");
 }
 
 server.listen(port, '0.0.0.0', () => {
-  return console.log(`server is listening on ${port} - ${process.env.PROTOCOL}://${process.env.HOST}:${process.env.PORT}${process.env.RUTA}/`);
+  console.log("------------------------------------");
+  console.log(`server is listening on ${port}`);
+  console.log(`swagger - ${process.env.PROTOCOL}${process.env.HOST}:${process.env.PORT}/swagger`);
+  console.log(`url - ${process.env.PROTOCOL}${process.env.HOST}:${process.env.PORT}${process.env.RUTA}/`)
+  return console.log("------------------------------------");;
 });
