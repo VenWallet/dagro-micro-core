@@ -76,7 +76,7 @@ if (process.env.NODE_ENV === "production") {
 server.listen(port, '0.0.0.0', () => {
   console.log("------------------------------------");
   console.log(`server is listening on ${port}`);
-  console.log(`swagger - ${process.env.PROTOCOL}://${process.env.HOST}:${process.env.PORT}/swagger`);
-  console.log(`url - ${process.env.PROTOCOL}://${process.env.HOST}:${process.env.PORT}${process.env.RUTA}/`)
+  console.log(`swagger - ${process.env.PROTOCOL}${process.env.HOST}:${process.env.PORT}/swagger`);
+  console.log(`url - ${process.env.PROTOCOL}${process.env.HOST}:${process.env.PORT}${process.env.RUTA}/`)
   return console.log("------------------------------------");;
 });
