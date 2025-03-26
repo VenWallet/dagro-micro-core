@@ -21,7 +21,7 @@ dotenv.config();
 process.env.TZ = "UTC";
 
 const app: Application = express();
-AppDataSource.initialize().then(() => console.log("Conexion ORM P2p Ready"));
+AppDataSource.initialize().then(() => console.log("Conexion ORM Ready"));
 
 app.set('trust proxy', true);
 
