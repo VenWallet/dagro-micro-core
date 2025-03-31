@@ -54,7 +54,7 @@ app.use(express.json());
 
 // routes
 app.use(process.env.RUTA!, router);
-app.use("/swagger", swaggerUi.serve, swaggerUi.setup(swaggerSetup));
+app.use("testnet/dagro/swagger", swaggerUi.serve, swaggerUi.setup(swaggerSetup));
 
 // credenciales ssl
 let server
