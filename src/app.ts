@@ -21,7 +21,7 @@ dotenv.config();
 process.env.TZ = "UTC";
 
 const app: Application = express();
-AppDataSource.initialize().then(() => console.log("Conexion ORM Ready"));
+AppDataSource.initialize().then(() => console.log("Conexion ORM P2p Ready"));
 
 app.set('trust proxy', true);
 
@@ -33,7 +33,7 @@ app.use(bodyParser.json({ limit: '50mb', type: 'application/json' }));
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 //app.use(morgan("dev"));
 
-/*if(process.env.NETWORK! === "mainnet"){
+if(process.env.NETWORK! === "mainnet"){
   const allowedOrigins = allowedOriginsList;
   app.use(cors({
     origin: function(origin, callback){
@@ -46,15 +46,15 @@ app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
       return callback(null, true);
     }
   }));
-} else {*/
+} else {
   app.use(cors());
-//}
+}
 app.use(express.json());
 
 
 // routes
 app.use(process.env.RUTA!, router);
-app.use("/testnet/dagro/swagger", swaggerUi.serve, swaggerUi.setup(swaggerSetup));
+app.use("/dagro/swagger", swaggerUi.serve, swaggerUi.setup(swaggerSetup));
 
 // credenciales ssl
 let server
@@ -69,14 +69,12 @@ if (process.env.NODE_ENV === "production") {
     ca: ca,
   };
   server = https.createServer(credentials, app);
+  console.log("htpps");
 } else {
   server = http.createServer(app);
+  console.log("htpp");
 }
 
 server.listen(port, '0.0.0.0', () => {
-  console.log("------------------------------------");
-  console.log(`server is listening on ${port}`);
-  console.log(`swagger - ${process.env.PROTOCOL}${process.env.HOST}:${process.env.PORT}/testnet/dagro/swagger`);
-  console.log(`url - ${process.env.PROTOCOL}${process.env.HOST}:${process.env.PORT}${process.env.RUTA}/`)
-  return console.log("------------------------------------");;
+  return console.log(`server is listening on ${port} - ${process.env.PROTOCOL}${process.env.HOST}:${process.env.PORT}${process.env.RUTA}/`);
 });
