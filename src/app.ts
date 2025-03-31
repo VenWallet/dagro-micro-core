@@ -54,7 +54,7 @@ app.use(express.json());
 
 // routes
 app.use(process.env.RUTA!, router);
-app.use("testnet/dagro/swagger", swaggerUi.serve, swaggerUi.setup(swaggerSetup));
+app.use("/testnet/dagro/swagger", swaggerUi.serve, swaggerUi.setup(swaggerSetup));
 
 // credenciales ssl
 let server
@@ -76,7 +76,7 @@ if (process.env.NODE_ENV === "production") {
 server.listen(port, '0.0.0.0', () => {
   console.log("------------------------------------");
   console.log(`server is listening on ${port}`);
-  console.log(`swagger - ${process.env.PROTOCOL}${process.env.HOST}:${process.env.PORT}/dagro/swagger`);
+  console.log(`swagger - ${process.env.PROTOCOL}${process.env.HOST}:${process.env.PORT}/testnet/dagro/swagger`);
   console.log(`url - ${process.env.PROTOCOL}${process.env.HOST}:${process.env.PORT}${process.env.RUTA}/`)
   return console.log("------------------------------------");;
 });
