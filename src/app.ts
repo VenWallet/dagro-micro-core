@@ -33,7 +33,7 @@ app.use(bodyParser.json({ limit: '50mb', type: 'application/json' }));
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 //app.use(morgan("dev"));
 
-if(process.env.NETWORK! === "mainnet"){
+/*if(process.env.NETWORK! === "mainnet"){
   const allowedOrigins = allowedOriginsList;
   app.use(cors({
     origin: function(origin, callback){
@@ -45,10 +45,10 @@ if(process.env.NETWORK! === "mainnet"){
       }
       return callback(null, true);
     }
-  }));
-} else {
+  }));*/
+//} else {
   app.use(cors());
-}
+//}
 app.use(express.json());
 
 
@@ -75,6 +75,12 @@ if (process.env.NODE_ENV === "production") {
   console.log("htpp");
 }
 
+
+// server.listen(port, () => {
 server.listen(port, '0.0.0.0', () => {
-  return console.log(`server is listening on ${port} - ${process.env.PROTOCOL}${process.env.HOST}:${process.env.PORT}${process.env.RUTA}/`);
+  console.log("------------------------------------");
+  console.log(`server is listening on ${port}`);
+  console.log(`swagger - ${process.env.PROTOCOL}${process.env.HOST}:${process.env.PORT}/dagro/swagger`);
+  console.log(`url - ${process.env.PROTOCOL}${process.env.HOST}:${process.env.PORT}${process.env.RUTA}/`)
+  return console.log("------------------------------------");;
 });
