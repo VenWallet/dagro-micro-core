@@ -14,6 +14,7 @@ export interface loginInterface {
   email: string;
   name: string;
   image: string;
+  telegram: string | null;
 }
 
 export interface profileInterface {
@@ -26,6 +27,7 @@ export interface profileInterface {
   heading: number | null;
   ladnName: string;
   landAddress: string;
+  telegram: string | null;
 }
 
 export interface functionCallInterface {

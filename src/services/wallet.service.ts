@@ -89,6 +89,7 @@ export default class WalletService {
       email: user.email,
       name: user.name,
       image: user.image,
+      telegram: user.telegram,
     };
   }
   
@@ -107,6 +108,7 @@ export default class WalletService {
       heading: user.heading?.id,
       ladnName: user.ladnName,
       landAddress: user.landAddress,
+      telegram: user.telegram,
     };
   }
 
@@ -140,6 +142,7 @@ export default class WalletService {
       heading?: number;
       ladnName?: string;
       landAddress?: string;
+      telegram?: string;
     }
   ): Promise<profileInterface> {
     const walletData: walletInterface = await walletUtils.parseFromSeedPhrase(
@@ -156,7 +159,7 @@ export default class WalletService {
           name: data.name,
           last_name: data.name,
           phone: data?.phoneNumber || "000000",
-          email: data.email,
+          email: "",//data.email,
           country: "VE",
           campo1: "",
           campo2: "",
@@ -236,6 +239,7 @@ export default class WalletService {
     user.headingQuantity = data?.headingQuantity || user.headingQuantity;
     user.ladnName = data?.ladnName || user.ladnName;
     user.landAddress = data?.landAddress || user.landAddress;
+    user.telegram = data?.telegram || user.telegram;
 
     user.save();
 
@@ -249,6 +253,7 @@ export default class WalletService {
       heading: user?.heading?.id,
       ladnName: user.ladnName,
       landAddress: user.landAddress,
+      telegram: user.telegram,
     };
   }
   
