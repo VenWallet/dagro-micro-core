@@ -56,7 +56,7 @@ export default class WalletService {
         id: wallet,
       },
       jwtSecret!,
-      { expiresIn: '15d' }
+      { expiresIn: '90d' }
     );
 
     return token;
