@@ -63,7 +63,7 @@ export class Users extends BaseEntity {
   @Column({
     nullable: true
   })
-  telegram!: string | null;
+  telegram!: string;
 
   @Column({
     nullable: false,
