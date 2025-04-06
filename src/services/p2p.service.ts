@@ -23,6 +23,8 @@ function delay(ms: number) {
 }
 import gql from 'graphql-tag';
 import { useQuery } from '../utils/graphql.utils';
+import EmailService from "./email.service";
+import WalletService from "./wallet.service";
 
 export default class P2pService {
   /*
@@ -62,11 +64,13 @@ export default class P2pService {
       const walletData: walletInterface = await walletUtils.parseFromSeedPhrase(
         seedPhrase
       );
+      
 
       //obtener balance near de la cuenta del usuario
       const balanceWallet: any = await walletUtils.getBalanceNear(walletData.address!);
       const balanceNear: string = balanceWallet.balanceAvalible;
       
+      console.log("balanceWallet: ", balanceWallet, " - balanceNear: ", balanceNear)
       if (Number(balanceNear) < 0.0005) {
         throw ResponseUtils.error(400, 'warning', 'Deposite al menos 0.0005 NEAR para iniciar la transacción');
       }
@@ -91,6 +95,7 @@ export default class P2pService {
           offerssell(id: $offerId) {
             exchange_rate
             remaining_amount
+            owner_id
           }
         }
       `;
@@ -254,7 +259,26 @@ export default class P2pService {
       if(!dataLogs) throw ResponseUtils.error(500, "unexpected smart contract error", walletUtils.extractNearErrorMessage(acceptOffer) || acceptOffer); 
       
       dataOrder = dataLogs.outcome.logs[0];
+
+      const orderId = JSON.parse(dataOrder)?.params?.order_id;
       
+      //envio de correo al cliente
+      const profileClient: profileInterface = await WalletService.getProfile(walletData.address!);
+      EmailService.sendEmailCreateOrder({
+        email: profileClient.email,
+        orderId: orderId,
+        type: "SELL"
+      })
+      .catch((error) => { console.log("error envio correo create order", error) });
+
+      //envio de correo al mercante
+      const profileMerchant: profileInterface = await WalletService.getProfile(resultOffer?.offerssell?.owner_id);
+      EmailService.sendEmailCreateOrder({
+        email: profileMerchant.email,
+        orderId: orderId,
+        type: "SELL"
+      })
+      .catch((error) => { console.log("error envio correo create order", error) });
 
       return dataOrder;
 
@@ -273,6 +297,25 @@ export default class P2pService {
       const walletData: walletInterface = await walletUtils.parseFromSeedPhrase(
         seedPhrase
       );
+
+      //buscar la orden
+      const queryOrder = `
+        query MyQuery($orderId: ID!) {
+          ordersell(id: $orderId) {
+            order_id
+            owner_id
+            signer_id
+          }
+        }
+      `;
+    
+      
+      const resultOrder = await useQuery({ query: queryOrder, variables: { orderId: `${orderId.toString()}|1` } })
+      .catch((error) => { 
+        throw ResponseUtils.error(400, 'warning', `Error al buscar la oferta - ${error}`);
+      });
+      
+
       
       //const val = data.typeOperation === "SELL" ? "1" : "2";
       //const type = data.typeOperation === "SELL" ? "VENTA" : "COMPRA";// sessionStorage.getItem('operation') === "SELL" ? "VENTA" : "COMPRA";
@@ -323,6 +366,30 @@ export default class P2pService {
       catch (error) {
         console.log("Error borrando el contrato", error);
       }
+
+
+      let profileMerchant: profileInterface;
+      if(resultOrder?.ordersell?.owner_id == walletData.address) {
+        profileMerchant= await WalletService.getProfile(resultOrder?.ordersell?.signer_id);
+        
+        EmailService.sendEmailReleaseOrder({
+          email: profileMerchant.email,
+          orderId: resultOrder?.ordersell?.order_id,
+          type: "SELL"
+        })
+        .catch((error) => { console.log("error envio correo create order", error) });
+      } else {
+        profileMerchant= await WalletService.getProfile(resultOrder?.ordersell?.owner_id);
+
+        EmailService.sendEmailCompletedOrder({
+          email: profileMerchant.email,
+          orderId: resultOrder?.ordersell?.order_id,
+          type: "SELL"
+        })
+        .catch((error) => { console.log("error envio correo create order", error) });
+      }
+
+      
   
       // const explorerLink = `https://nearblocks.io/es/txns/${orderConfirmation.transaction.hash}`;
       const explorerLink = `https://pikespeak.ai/transaction-viewer/${orderConfirmation.transaction.hash}`;

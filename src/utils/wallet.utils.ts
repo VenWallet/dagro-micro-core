@@ -57,11 +57,17 @@ async function getBalanceNear(address: string) {
 	const amount = Number(item?.data?.result?.amount || 0);
 	const storageUsage = Number(item?.data?.result?.storage_usage || 0);
 
-	const balanceWallet = amount / 1e24;
-	const reservedStorage = storageUsage / 1e5;
-	const reservedTransaction =
+	const balanceWallet: number = amount / 1e24;
+	const reservedStorage: number = storageUsage / 1e5;
+	const reservedTransaction: number =
 		amount !== 0 ? Math.min(balanceWallet - reservedStorage, 0.05) : 0;
-	const balanceAvalible = balanceWallet - reservedStorage - reservedTransaction;
+  /*const sustractBalance: number = reservedStorage - reservedTransaction;
+  const epsilon = 1e-10;
+  console.log(sustractBalance, sustractBalance * - 1, reservedStorage, reservedTransaction)
+  console.log(sustractBalance < -epsilon ? sustractBalance * (-1) : sustractBalance)
+  const prub: number = balanceWallet - (sustractBalance < -epsilon ? sustractBalance * (-1) : sustractBalance);
+  console.log(prub)*/
+	const balanceAvalible: number = balanceWallet - reservedStorage - reservedTransaction;
 
 	return {
 		balanceAvalible: balanceAvalible,

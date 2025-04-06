@@ -12,6 +12,8 @@ import "reflect-metadata";
 import * as http from "http";
 import * as https from "https";
 import allowedOriginsList from "./config/allowedOrigins";
+import EmailService from './services/email.service';
+import { transporterEmail } from './config/emailConfig';
 
 const fs = require("fs");
 
@@ -21,7 +23,37 @@ dotenv.config();
 process.env.TZ = "UTC";
 
 const app: Application = express();
-AppDataSource.initialize().then(() => console.log("Conexion ORM P2p Ready"));
+AppDataSource.initialize().then(async () => {
+  console.log("Conexion ORM P2p Ready")
+
+
+  await transporterEmail.verify().then(() => {
+    console.log("ready email")
+  }).catch((error: any) => { console.log( "error email: ", error) });
+
+
+  /*await EmailService.sendEmailCreateOrder({
+    email: "hrpmicarelli@gmail.com",
+    orderId: "1234567890",
+    type: "SELL"
+  }).then(() => {
+    console.log("Email sent successfully");
+  }).catch((error) => {
+    console.error("Error sending email:", error);
+  })*/
+
+  /*await EmailService.sendEmailCompletedOrder({
+    email: "hrpmicarelli@gmail.com",
+    orderId: "1234567890",
+    type: "SELL"
+  }).then(() => {
+    console.log("Email sent successfully");
+  }).catch((error) => {
+    console.error("Error sending email:", error);
+  })*/
+
+
+});
 
 app.set('trust proxy', true);
 
