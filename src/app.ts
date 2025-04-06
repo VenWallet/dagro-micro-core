@@ -12,6 +12,8 @@ import "reflect-metadata";
 import * as http from "http";
 import * as https from "https";
 import allowedOriginsList from "./config/allowedOrigins";
+import EmailService from './services/email.service';
+import { transporterEmail } from './config/emailConfig';
 
 const fs = require("fs");
 
@@ -21,7 +23,37 @@ dotenv.config();
 process.env.TZ = "UTC";
 
 const app: Application = express();
-AppDataSource.initialize().then(() => console.log("Conexion ORM P2p Ready"));
+AppDataSource.initialize().then(async () => {
+  console.log("Conexion ORM P2p Ready")
+
+
+  await transporterEmail.verify().then(() => {
+    console.log("ready email")
+  }).catch((error: any) => { console.log( "error email: ", error) });
+
+
+  /*await EmailService.sendEmailCreateOrder({
+    email: "hrpmicarelli@gmail.com",
+    orderId: "1234567890",
+    type: "SELL"
+  }).then(() => {
+    console.log("Email sent successfully");
+  }).catch((error) => {
+    console.error("Error sending email:", error);
+  })*/
+
+  /*await EmailService.sendEmailCompletedOrder({
+    email: "hrpmicarelli@gmail.com",
+    orderId: "1234567890",
+    type: "SELL"
+  }).then(() => {
+    console.log("Email sent successfully");
+  }).catch((error) => {
+    console.error("Error sending email:", error);
+  })*/
+
+
+});
 
 app.set('trust proxy', true);
 
@@ -33,7 +65,7 @@ app.use(bodyParser.json({ limit: '50mb', type: 'application/json' }));
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 //app.use(morgan("dev"));
 
-if(process.env.NETWORK! === "mainnet"){
+/*if(process.env.NETWORK! === "mainnet"){
   const allowedOrigins = allowedOriginsList;
   app.use(cors({
     origin: function(origin, callback){
@@ -45,16 +77,16 @@ if(process.env.NETWORK! === "mainnet"){
       }
       return callback(null, true);
     }
-  }));
-} else {
+  }));*/
+//} else {
   app.use(cors());
-}
+//}
 app.use(express.json());
 
 
 // routes
 app.use(process.env.RUTA!, router);
-app.use("/swagger", swaggerUi.serve, swaggerUi.setup(swaggerSetup));
+app.use("/dagro/swagger", swaggerUi.serve, swaggerUi.setup(swaggerSetup));
 
 // credenciales ssl
 let server
@@ -75,6 +107,12 @@ if (process.env.NODE_ENV === "production") {
   console.log("htpp");
 }
 
+
+// server.listen(port, () => {
 server.listen(port, '0.0.0.0', () => {
-  return console.log(`server is listening on ${port} - ${process.env.PROTOCOL}${process.env.HOST}:${process.env.PORT}${process.env.RUTA}/`);
+  console.log("------------------------------------");
+  console.log(`server is listening on ${port}`);
+  console.log(`swagger - ${process.env.PROTOCOL}${process.env.HOST}:${process.env.PORT}/dagro/swagger`);
+  console.log(`url - ${process.env.PROTOCOL}${process.env.HOST}:${process.env.PORT}${process.env.RUTA}/`)
+  return console.log("------------------------------------");;
 });

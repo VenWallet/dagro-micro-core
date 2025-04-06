@@ -1,3 +1,5 @@
+import { Headings } from "../entities";
+
 export interface walletInterface {
   seedPhrase: string;
   publicKey: string;
@@ -18,9 +20,18 @@ export interface profileInterface {
   wallet: string;
   email: string;
   name: string;
+  phoneNumber: string;
   image: string;
   headingQuantity: string;
-  heading: string;
+  heading: number | null;
   ladnName: string;
   landAddress: string;
 }
+
+export interface functionCallInterface {
+  contractId: string;
+  methodName: string;
+  args: any;
+  gas: string | undefined;
+  attachedDeposit: string | undefined;
+};

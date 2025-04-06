@@ -5,9 +5,10 @@ import {
   BaseEntity,
   CreateDateColumn,
   Index,
-  
+  ManyToOne,
 } from "typeorm";
 
+import { Headings } from "./";
 
 @Entity({ name: "users" })
 @Index(["id", "email"])
@@ -21,17 +22,22 @@ export class Users extends BaseEntity {
   email!: string;
 
   @Column({
-    nullable: true,
+    nullable: true
   })
   name!: string;
 
   @Column({
-    nullable: true,
+    nullable: true
+  })
+  phoneNumber!: string;
+  
+  @Column({
+    nullable: true
   })
   ladnName!: string;
 
   @Column({
-    nullable: true,
+    nullable: true
   })
   landAddress!: string;
 
@@ -41,20 +47,30 @@ export class Users extends BaseEntity {
   })
   wallet!: string;
 
-  @Column({
-    nullable: true,
-  })
-  heading!: string;
+  @ManyToOne(() => Headings, heading => heading.id, { nullable: true })
+  heading!: Headings;
 
   @Column({
-    nullable: true,
+    nullable: true
   })
   headingQuantity!: string;
 
   @Column({
-    nullable: true,
+    nullable: true
   })
   image!: string;
+
+  @Column({
+    nullable: false,
+    default: " "
+  })
+  token!: string;
+
+  @Column({
+    nullable: false,
+    default: " "
+  })
+  secret!: string;
 
   @CreateDateColumn({type: "timestamptz"})
   creation_date!: Date;
