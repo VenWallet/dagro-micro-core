@@ -24,7 +24,7 @@ export default class EmailService {
     transporter.use('compile', hbs(handlebarOptions))
     
     const mailOptions = {
-        from: process.env.USER_EMAIL,
+        from: process.env.FROM_MAIL,
         to: data.email,
         subject: 'Notificacion Dagro tiene una nueva orden',
         template: 'emailOrder', // the name of the template file i.e email.handlebars
@@ -70,7 +70,7 @@ export default class EmailService {
     transporter.use('compile', hbs(handlebarOptions))
     
     const mailOptions = {
-      from: process.env.USER_EMAIL,
+      from: process.env.FROM_MAIL,
       to: data.email,
       subject: 'Notificacion Dagro liberar orden',
       template: 'emailOrder', // the name of the template file i.e email.handlebars
@@ -115,7 +115,7 @@ export default class EmailService {
     transporter.use('compile', hbs(handlebarOptions))
     
     const mailOptions = {
-        from: process.env.USER_EMAIL,
+        from: process.env.FROM_MAIL,
         to: data.email,
         subject: 'Notificacion Dagro Orden Culminada',
         template: 'emailOrder', // the name of the template file i.e email.handlebars
