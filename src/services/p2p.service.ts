@@ -264,6 +264,7 @@ export default class P2pService {
       console.log("orderId", orderId)
       //envio de correo al cliente
       const profileClient: profileInterface = await WalletService.getProfile(walletData.address!);
+      console.log("profileClient: ", profileClient)
       EmailService.sendEmailCreateOrder({
         email: profileClient.email,
         orderId: orderId,
@@ -273,6 +274,7 @@ export default class P2pService {
 
       //envio de correo al mercante
       const profileMerchant: profileInterface = await WalletService.getProfile(resultOffer?.offerssell?.owner_id);
+      console.log("profileMerchant: ", profileMerchant)
       EmailService.sendEmailCreateOrder({
         email: profileMerchant.email,
         orderId: orderId,
