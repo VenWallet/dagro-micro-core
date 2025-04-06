@@ -61,6 +61,11 @@ export class Users extends BaseEntity {
   image!: string;
 
   @Column({
+    nullable: true
+  })
+  telegram!: string | null;
+
+  @Column({
     nullable: false,
     default: " "
   })
