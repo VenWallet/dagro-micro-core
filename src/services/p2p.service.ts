@@ -70,7 +70,7 @@ export default class P2pService {
       const balanceWallet: any = await walletUtils.getBalanceNear(walletData.address!);
       const balanceNear: string = balanceWallet.balanceAvalible;
       
-      console.log("balanceWallet: ", balanceWallet, " - balanceNear: ", balanceNear)
+   
       if (Number(balanceNear) < 0.0005) {
         throw ResponseUtils.error(400, 'warning', 'Deposite al menos 0.0005 NEAR para iniciar la transacción');
       }
@@ -259,11 +259,12 @@ export default class P2pService {
       if(!dataLogs) throw ResponseUtils.error(500, "unexpected smart contract error", walletUtils.extractNearErrorMessage(acceptOffer) || acceptOffer); 
       
       dataOrder = dataLogs.outcome.logs[0];
-
+      console.log("dataOrder", dataOrder)
       const orderId = JSON.parse(dataOrder)?.params?.order_id;
-      
+      console.log("orderId", orderId)
       //envio de correo al cliente
       const profileClient: profileInterface = await WalletService.getProfile(walletData.address!);
+      console.log("profileClient: ", profileClient)
       EmailService.sendEmailCreateOrder({
         email: profileClient.email,
         orderId: orderId,
@@ -273,6 +274,7 @@ export default class P2pService {
 
       //envio de correo al mercante
       const profileMerchant: profileInterface = await WalletService.getProfile(resultOffer?.offerssell?.owner_id);
+      console.log("profileMerchant: ", profileMerchant)
       EmailService.sendEmailCreateOrder({
         email: profileMerchant.email,
         orderId: orderId,
@@ -367,7 +369,8 @@ export default class P2pService {
         console.log("Error borrando el contrato", error);
       }
 
-
+      console.log("owner: ", resultOrder?.ordersell?.owner_id)
+      console.log("signer: " ,resultOrder?.ordersell?.signer_id)
       let profileMerchant: profileInterface;
       if(resultOrder?.ordersell?.owner_id == walletData.address) {
         profileMerchant= await WalletService.getProfile(resultOrder?.ordersell?.signer_id);
