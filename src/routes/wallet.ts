@@ -91,6 +91,9 @@ router.post('/login-seed-phrase', walletController.loginSeedPhrase);
  *                 landAddress:
  *                   type: string
  *                   description: Dirección del terreno asociado al usuario
+ *                 telegram:
+ *                   type: string
+ *                   description: red social del usuario
  *       401:
  *         description: Token inválido o no autorizado
  *       500:
@@ -220,6 +223,9 @@ router.get('/get-headings', authMiddleware, walletController.getHeadings);
  *               landAddress:
  *                 type: string
  *                 description: Dirección del terreno asociado al usuario (opcional)
+ *              telegram:
+ *                type: string
+ *               description: red social del usuario (opcional)
  *     responses:
  *       200:
  *         description: Perfil actualizado exitosamente
@@ -255,6 +261,9 @@ router.get('/get-headings', authMiddleware, walletController.getHeadings);
  *                 landAddress:
  *                   type: string
  *                   description: Dirección del terreno asociado al usuario
+ *                telegram:
+ *                  type: string
+ *                 description: red social del usuario
  *       400:
  *         description: Error en los datos proporcionados
  *       401:
