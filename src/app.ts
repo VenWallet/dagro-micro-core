@@ -14,6 +14,7 @@ import * as https from "https";
 import allowedOriginsList from "./config/allowedOrigins";
 import EmailService from './services/email.service';
 import { transporterEmail } from './config/emailConfig';
+import WalletService from './services/wallet.service';
 
 const fs = require("fs");
 
@@ -31,6 +32,8 @@ AppDataSource.initialize().then(async () => {
     console.log("ready email")
   }).catch((error: any) => { console.log( "error email: ", error) });
 
+
+  //console.log(await WalletService.getProfile("0e87165abdd41579257d520a6c5445b42fe8683449e31f2b3cad8c6a067e7bb4"))
 
   /*await EmailService.sendEmailCreateOrder({
     email: "hrpmicarelli@gmail.com",

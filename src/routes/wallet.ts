@@ -6,16 +6,24 @@ import ImageController from '../controllers/image.controllers';
 
 
 /**
- * Post track
  * @swagger
  * /wallet/status:
  *   get:
  *     tags:
- *      - wallet
- *     summary: Verifica el estado del servicio wallet
+ *       - wallet
+ *     summary: Verifica el estado del servicio
+ *     description: Este endpoint devuelve un mensaje de estado del servicio.
  *     responses:
  *       200:
- *         description: Servicio funcionando correctamente
+ *         description: Estado del servicio
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "ok"
  */
 router.get('/status', walletController.status)
 
@@ -117,7 +125,7 @@ router.get('/get-profile', authMiddleware, walletController.getProfile);
  *         required: true
  *         schema:
  *           type: string
- *         description: Dirección de la billetera del usuario
+ *           description: Dirección de la billetera del usuario
  *     responses:
  *       200:
  *         description: Perfil personalizado obtenido exitosamente
@@ -225,7 +233,7 @@ router.get('/get-headings', authMiddleware, walletController.getHeadings);
  *                 description: Dirección del terreno asociado al usuario (opcional)
  *              telegram:
  *                type: string
- *               description: red social del usuario (opcional)
+ *                description: red social del usuario (opcional)
  *     responses:
  *       200:
  *         description: Perfil actualizado exitosamente
@@ -261,9 +269,9 @@ router.get('/get-headings', authMiddleware, walletController.getHeadings);
  *                 landAddress:
  *                   type: string
  *                   description: Dirección del terreno asociado al usuario
- *                telegram:
+ *                 telegram:
  *                  type: string
- *                 description: red social del usuario
+ *                  description: red social del usuario
  *       400:
  *         description: Error en los datos proporcionados
  *       401:
