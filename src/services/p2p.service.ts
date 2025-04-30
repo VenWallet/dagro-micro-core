@@ -372,6 +372,7 @@ export default class P2pService {
       console.log("owner: ", resultOrder?.ordersell?.owner_id)
       console.log("signer: " ,resultOrder?.ordersell?.signer_id)
       let profileMerchant: profileInterface;
+      
       if(resultOrder?.ordersell?.owner_id == walletData.address) {
         profileMerchant= await WalletService.getProfile(resultOrder?.ordersell?.signer_id);
         
