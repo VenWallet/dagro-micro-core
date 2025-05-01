@@ -28,29 +28,28 @@ import ImageController from '../controllers/image.controllers';
 router.get('/status', walletController.status)
 
 /**
- * Post track
  * @swagger
  * /wallet/login-seed-phrase:
- *    post:
- *      tags:
- *        - wallet
- *      summary: .
- *      description: .
- *      requestBody:
- *          content:
- *            application/json:
- *              schema:
- *                type: object
- *                properties:
- *                  seedPhrase:
- *                    type: string
- *      responses:
- *        '200':
- *          description: .
- *        '400':
- *          description: .
- *        '500':
- *          description: server internal error.
+ *   post:
+ *     tags:
+ *       - wallet
+ *     summary: Inicia sesión con una frase semilla
+ *     description: Este endpoint permite iniciar sesión utilizando una frase semilla.
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               seedPhrase:
+ *                 type: string
+ *     responses:
+ *       '200':
+ *         description: .
+ *       '400':
+ *         description: .
+ *       '500':
+ *         description: server internal error.
  */
 router.post('/login-seed-phrase', walletController.loginSeedPhrase);
 
@@ -231,9 +230,9 @@ router.get('/get-headings', authMiddleware, walletController.getHeadings);
  *               landAddress:
  *                 type: string
  *                 description: Dirección del terreno asociado al usuario (opcional)
- *              telegram:
+ *               telegram:
  *                 type: string
- *                 description: red social del usuario (opcional)
+ *                 description: Red social del usuario (opcional)
  *     responses:
  *       200:
  *         description: Perfil actualizado exitosamente
@@ -270,8 +269,8 @@ router.get('/get-headings', authMiddleware, walletController.getHeadings);
  *                   type: string
  *                   description: Dirección del terreno asociado al usuario
  *                 telegram:
- *                  type: string
- *                  description: red social del usuario
+ *                   type: string
+ *                   description: Red social del usuario
  *       400:
  *         description: Error en los datos proporcionados
  *       401:
