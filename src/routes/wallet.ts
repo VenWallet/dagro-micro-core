@@ -232,8 +232,8 @@ router.get('/get-headings', authMiddleware, walletController.getHeadings);
  *                 type: string
  *                 description: Dirección del terreno asociado al usuario (opcional)
  *              telegram:
- *                type: string
- *                description: red social del usuario (opcional)
+ *                 type: string
+ *                 description: red social del usuario (opcional)
  *     responses:
  *       200:
  *         description: Perfil actualizado exitosamente
