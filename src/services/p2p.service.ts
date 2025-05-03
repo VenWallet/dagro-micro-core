@@ -99,15 +99,13 @@ export default class P2pService {
           }
         }
       `;
-    
       
       const resultOffer = await useQuery({ query: queryOffer, variables: { offerId: data.offerId.toString() } })
       .catch((error) => { 
         throw ResponseUtils.error(400, 'warning', `Error al buscar la oferta - ${error}`);
       });
 
-
-      if(BigInt(resultOffer?.offerssell?.remaining_amount) < BigInt(data.amountOrder)) { 
+      if(BigInt(resultOffer?.offerssell?.remaining_amount) < BigInt(amountOrderParse)) { 
         throw ResponseUtils.error(400, 'warning', 'La cantidad de la orden es mayor a la cantidad disponible en la oferta'); 
       }
 
